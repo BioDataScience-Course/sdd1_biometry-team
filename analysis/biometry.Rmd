@@ -1,8 +1,7 @@
 ---
-title: "R Notebook"
-author: "..."
-date: "..."
-output: html_notebook
+title: "Biométrie humaine"
+author: "Lisa Mussoi, Laura Braeckevelt, Laura Toubeau, Margaux Renier"
+date: "11/10/2018"
 ---
 
 ```{r setup}
@@ -12,5 +11,28 @@ options(data.io_lang = "fr") # Labels en français
 
 
 ```{r importation}
-biometry <- read("../data/biometry_2014.xlsx")
+biometry <- read("../data/biometry_2016.xlsx")
+
 ```
+
+
+
+# Introduction
+
+Analyse de la biométrie humaine comprenant les sept facteurs suivant : sexe, date de naissance, l'année de naissance, le poids, la taille, la circomférence du poignet en mm et l'année de la prise de mesure.
+
+# But
+
+Analyser les donées de la biométrie humaine à l'aide de différents individus.
+
+# Résultats
+```{r graphique 1}
+# Graphique de la hauteur en fonction du poids.
+chart(biometry, formula = height ~ weight %col=% gender) + geom_point(na.rm = TRUE)
+```
+
+```
+
+# Conclusion
+
+On constate sur ce graphique que les hommes sont plus grands et plus lourds que les femmes.  
