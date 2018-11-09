@@ -1,0 +1,28 @@
+---
+title: "Biométrie humaine"
+author: "TOUBEAU Laura"
+date: "11/9/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SciViews::R
+```
+
+```{r}
+biometry_h <-read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv")
+```
+
+```{r}
+biometry_h %>.%
+  filter(., genre !="NA") -> except_NA
+```
+
+```{r, taille_masse}
+chart(except_NA, masse ~ taille | genre )+
+geom_point(na.rm=TRUE)
+```
+
+
+
