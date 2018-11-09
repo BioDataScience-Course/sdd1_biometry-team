@@ -1,0 +1,24 @@
+---
+title: "biometry 2018.14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SciViews::R
+```
+# importation de données
+```{r}
+(biometry2 <- read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv"))
+
+```
+
+```{r}
+biometry2 %>.%
+  filter(., taille != "NA" ) -> test2
+```
+
+```{r}
+chart(test2, )
+```
+
