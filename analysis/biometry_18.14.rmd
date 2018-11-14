@@ -1,0 +1,51 @@
+---
+title: "biometry 2018.14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SciViews::R
+```
+# importation de données
+```{r}
+(biometry2 <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale =  locale(decimal_mark= ",")))
+
+```
+
+```{r}
+biometry2 %>.%
+  filter(., taille != "NA" ) -> test2
+```
+#correction variables facteurs-numérique
+```{r}
+test2$acti_physique <- as.numeric(test2$acti_physique) 
+```
+```{r}
+test2$alcool <- as.numeric(test2$alcool)
+```
+
+```{r}
+test2$grignotage <- as.numeric(test2$grignotage)
+```
+
+```{r}
+test2$fastfood <- as.numeric(test2$fastfood)
+```
+
+#graphique
+```{r}
+chart(test2, taille~masse %col=% genre)+
+  geom_point()
+```
+
+```{r}
+chart(test2, ~tour_taille )+
+  geom_histogram(bins= 30, na.rm = TRUE)
+```
+
+#importation rds 
+```{r}
+write(biometry2, file ="/biometry2.rds", type = "rds", compress= "xz")
+```
+
