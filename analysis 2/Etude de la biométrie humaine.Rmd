@@ -31,16 +31,24 @@ chart(biometry_2018, masse ~ genre %col=% genre) + geom_boxplot(na.rm = TRUE)
 ```
  
  On observe que les hommes ont une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
+ Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :
  
+```{r test}
+H_{0} : \overline{ masse_{f} } = \overline{ masse_{m} }
+```
+
+
+
 
 
 ```{r Student test pour la masse et le genre }
 t.test(data = biometry_2018, masse ~ genre,
   alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
 ```
+H_{0} : \overline{ masse_{f} } = \overline{ masse_{m} }
 
+H_{1}: \overline{ masse_{m} } \neq \overline{ masse_{m} }
 
-
-
+npus ne rejettons pas h0
 
 
