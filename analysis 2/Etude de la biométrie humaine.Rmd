@@ -19,15 +19,28 @@ library(visdat)
 #biometry_2018 <- read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv ")
 
 biometry_2018 <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
-write(biometry_2018, file = "data/biometry_2018.rds", type = "rds", compress = "xz")
+write(biometry_2018, file = "../biometry_2018.rds", type = "rds")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r Test de Student}
+skim(biometry_2018)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r graphique masse et genre}
+chart(biometry_2018, masse ~ genre %col=% genre) + geom_boxplot(na.rm = TRUE) 
+```
+ 
+ On observe que les hommes ont une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
+ 
+
+
+```{r Student test pour la masse et le genre }
+t.test(data = biometry_2018, masse ~ genre,
+  alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
+```
+
+
+
+
+
+
