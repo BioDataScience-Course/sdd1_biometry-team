@@ -29,4 +29,3 @@ biometry_2018_1$hainaut <- factor(biometry_2018_1$hainaut, levels = c("o", "n"))
 
 
 
-
