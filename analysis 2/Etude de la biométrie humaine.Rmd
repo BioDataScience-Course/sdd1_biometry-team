@@ -5,6 +5,17 @@ date:"14/11/2018"
 output: html_document
 ---
 
+# Introduction
+Nous avons récolté des données concernant la biométrie humaine et intérroger des personnes sur leur habitude alimentaire ainsi que sur leur travail afin de pouvoir les analyser.
+
+# But
+Récolte de données sur la biométrie humaines dans le but de les analyser et tirer des conclusions.
+
+# Matériels et méthodes
+
+Nous avons interrogé plusieurs personnes entre une tranche d'âge de 15 à 70 ans. Nous avons pris leur poids avec la même balance afin de conserver la même erreur. Nous l'avons ensuite converti avec l'erreur de la balance en laboratoire. Un mètre ruban nous a servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
+nous avons ensuite posé plusieurs questions concernant : l'âge, le poids, le genre, leur activité physique, la profession (sédentaire, intermédiaire, active), la consommation d'alcool, le nombre de fast-food, nombre de repas, le grignotage, nombre de comsommation de viande et s'ils habitaient dans le Hainaut. 
+
 ```{r setup, include=FALSE}
 #packages
 SciViews::R
@@ -13,7 +24,7 @@ library(visdat)
 ```
 
 
-```{r cars}
+```{r data}
 #import data
 
 #biometry_2018 <- read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv ")
@@ -21,6 +32,9 @@ library(visdat)
 biometry_2018 <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
 write(biometry_2018, file = "../biometry_2018.rds", type = "rds")
 ```
+
+# Résultats
+
 
 ```{r Test de Student}
 skim(biometry_2018)
@@ -50,5 +64,8 @@ H_{0} : \overline{ masse_{f} } = \overline{ masse_{m} }
 H_{1}: \overline{ masse_{m} } \neq \overline{ masse_{m} }
 
 npus ne rejettons pas h0
+
+
+
 
 
