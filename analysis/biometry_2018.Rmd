@@ -1,0 +1,116 @@
+---
+title: "Biometry 2018"
+author: "Mussoi Lisa"
+date: "09/11/2018"
+output: html_document
+---
+
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SciViews::R
+library(skimr)
+library(visdat)
+```
+
+```{r}
+```
+
+```{r}
+
+```
+
+```{r}
+biometry <- readr::read_csv ("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
+```
+
+
+
+```{r}
+summary(biometry)
+```
+
+```{r}
+filter(biometry,genre != "NA") -> biometry
+```
+
+```{r}
+biometry_filtre$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+
+```{r}
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+```{r}
+biometry$alcool <- as.numeric(biometry$alcool)
+```
+
+```{r}
+biometry$fastfood <- as.numeric(biometry$fastfood)
+```
+
+```{r}
+chart(data = biometry, ~ alcool) +
+  geom_histogram(bins= 30) +
+  ylab("Effectifs")
+```
+
+```{r}
+write(biometry, file ="../data/biometry.rds", type = "rds", compress ="xz")
+```
+
+```{r}
+chart(data = biometry, ~ alcool %fill=% acti_profession) +
+  geom_histogram(bins= 30) 
+```
+
+```{r}
+chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Distribution du chi carré
+```{r}
+# Chi-square distribution (density probability) with parameter:
+.df <- 3# Degree of freedom .df
+.col <- 1; .add <- FALSE # Plot parameters
+.x <- seq(0, qchisq(0.999, df = .df), l = 1000)  # Quantiles
+.d <- function (x) dchisq(x, df = .df)           # Distribution function
+.q <- function (p) qchisq(p, df = .df)           # Quantile for lower-tail prob
+.label <- bquote(paste(chi^2,(.(.df))))          # Curve parameters
+curve(.d(x), xlim = range(.x), xaxs = "i", n = 1000, col = .col,
+  add = .add, xlab = "Quantiles", ylab = "Probability density") # Curve
+abline(h = 0, col = "gray") # Baseline
+```
+
+
+
+```{r}
+# creation du jeu de données
+biométry_chi <- data_frame(Pommes = 16, Bananes = 22, Oranges = 7)
+# test du chi2
+chisq.test(alim, p = c(1/3, 1/3, 1/3, rescale.p = FALSE)
+```
+
+
