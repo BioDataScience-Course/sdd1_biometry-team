@@ -66,6 +66,16 @@ H_{1}: \overline{ masse_{m} } \neq \overline{ masse_{m} }
 npus ne rejettons pas h0
 
 
+```{r Distribution dans les différents groupes}
+chart(data = biometry_2018, masse ~ genre) + # Je réalise un graphique 
+  geom_violin(na.rm = TRUE) + # Je réalise un graphique en violon
+  geom_jitter(width = 0.05, alpha = 0.5) + # J'ajoute les points sur le graphique 
+  stat_summary(geom = "point", fun.y = "mean", color = "red", size = 4) # J'ajoute la moyenne en rouge
+
+
+```
+
+
 
 
 
