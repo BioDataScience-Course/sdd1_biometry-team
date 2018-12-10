@@ -72,7 +72,7 @@ chart(data = biometry_2018, masse ~ genre) +
 
 ```
 
-On voit avec le point rouge dans les formes, la moyenne.
+On voit avec le point rouge dans les formes la moyenne.
 
 ```{r anova de biometry_2018}
 anova(anova. <- lm(data = biometry_2018, masse ~ genre))
