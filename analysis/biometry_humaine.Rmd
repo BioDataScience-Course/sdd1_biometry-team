@@ -51,17 +51,13 @@ geom_point(na.rm=TRUE)
 ```
 
 ```{r}
-chart(except_NA, ~ alcool) +
-  geom_histogram(bins = 50) 
-```
-
-```{r}
 chart(except_NA, masse ~ alcool | genre )+
 geom_point(na.rm=TRUE)
 ```
 
 ```{r}
-
+chart(except_NA, ~ alcool %fill=% acti_profession) +
+  geom_histogram(bins = 50) 
 ```
 
 
