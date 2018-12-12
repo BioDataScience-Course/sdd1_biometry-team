@@ -1,0 +1,15 @@
+---
+title: ""
+output: html_notebook
+---
+#tableau comparatif markdown et excel
+|               | Markdown                             | Excel                                |
+  | ------------- | ------------------------------------ | ------------------------------------ |
+  | Avantage      | Couleurs dans le graphique,          | Tout le monde peut travailler dessus |
+  |               | Echelle mieux repectée               | Simple                               |
+  |               | Réalisation directe                  |                                      |
+  |               | mise en page fait automatiquement    |                                      |
+  | Inconvénients | tout le monde ne sait pas l'utiliser | trop simple, trop basique            |
+|               | connaitre code                       | pas de réalisation directe           |
+|               |                                      | données pas claires                  |
+|               |                                      |                                      |
