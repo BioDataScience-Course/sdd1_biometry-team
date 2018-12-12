@@ -1,0 +1,64 @@
+---
+title: "Biométrie humaine"
+author: "TOUBEAU Laura"
+date: "11/9/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+SciViews::R
+```
+
+```{r}
+biometry_h <-read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
+```
+
+```{r}
+biometry_h %>.%
+  filter(., genre !="NA") -> except_NA
+```
+
+```{r}
+visdat::vis_dat(except_NA)
+```
+
+```{r}
+except_NA$alcool <- as.numeric(except_NA$alcool)
+```
+
+```{r}
+except_NA$acti_physique <- as.numeric(except_NA$acti_physique)
+```
+
+```{r}
+except_NA$fastfood <- as.numeric(except_NA$fastfood)
+```
+
+```{r}
+except_NA$grignotage <- as.numeric(except_NA$grignotage)
+```
+
+```{r}
+except_NA$genre <- as.factor(except_NA$genre)
+```
+
+
+
+```{r, taille_masse}
+chart(except_NA, masse ~ taille | genre )+
+geom_point(na.rm=TRUE)
+```
+
+```{r}
+chart(except_NA, masse ~ alcool | genre )+
+geom_point(na.rm=TRUE)
+```
+
+```{r}
+chart(except_NA, ~ alcool %fill=% acti_profession) +
+  geom_histogram(bins = 50) 
+```
+
+
+

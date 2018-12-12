@@ -39,7 +39,7 @@ filter(biometry,genre != "NA") -> biometry
 ```
 
 ```{r}
-biometry_filtre$acti_physique <- as.numeric(biometry$acti_physique)
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
 ```
 
 
@@ -106,11 +106,6 @@ abline(h = 0, col = "gray") # Baseline
 
 
 
-```{r}
-# creation du jeu de données
-biométry_chi <- data_frame(Pommes = 16, Bananes = 22, Oranges = 7)
-# test du chi2
-chisq.test(alim, p = c(1/3, 1/3, 1/3, rescale.p = FALSE)
-```
+
 
 
