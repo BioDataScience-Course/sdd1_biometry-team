@@ -6,25 +6,28 @@ output: html_document
 ---
 
 # Introduction
-Nous avons récolté des données concernant la biométrie humaine et intérroger des personnes sur leur habitude alimentaire ainsi que sur leur travail afin de pouvoir les analyser.
+  Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que surleur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
 
 # But
-Récolte de données sur la biométrie humaines dans le but de les analyser et tirer des conclusions, et observer l'obésité dans le haineaut particulièrement.
+  Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfie, quant au taux de cas d'obésité dans le hainaut particulièrement.
 
 # Matériels et méthodes
 
-Nous avons interrogé plusieurs personnes entre une tranche d'âge de 15 à 70 ans. Nous avons pris leur poids avec la même balance afin de conserver la même erreur. Nous l'avons ensuite converti avec l'erreur de la balance en laboratoire. Un mètre ruban nous a servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
-nous avons ensuite posé plusieurs questions concernant : l'âge, le poids, le genre, leur activité physique, la profession (sédentaire, intermédiaire, active), la consommation d'alcool, le nombre de fast-food, nombre de repas, le grignotage, nombre de comsommation de viande et s'ils habitaient dans le Hainaut. Dans 1 premier temps, on rentre ces données récolter dans une google sheet, on importe ensuite cette googlesheet. Pour importer ces données on utilise la fonction "read" ensuite on colle le lien de la google sheet en le mettant en format "csv". Ensuite on résume les données et on les filtres pour supprimer les "NA" donc les données non encodée pour avoir des résulats plus clairs. Et pour bine commencer à travailler on défini les varibles nuémriques et les variables facteurs. Ensuite on effectue quelques tests et quelque graphique afin de pouvoir analyser et montrer les resultats de cette expérience. 
+  Nous avons interrogé plusieurs personnes dans une tranche d'âge de 15 à 70 ans. Ensuite, nous les avons pesé en considérant une seule et unique balance afin de conserver la même erreur pour toutes les valeurs. C'est d'ailleurs pour cette raison qu'une conversion en fonction de l'erreur calculée pour la balance de laboratoire fût nécessaire. Un mètre ruban nous a également servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
+De plus, plusieurs questions leur ont été posées concernant : leur âge, leur genre, leur activité physique, leur profession (sédentaire, intermédiaire, active), leur consommation d'alcool, le nombre de fast-food par mois, de repas et de grignotage(s) par jour, la comsommation de viande hebdomadaire (quantitative) et leur lieu de résidence (dans le Hainaut ou non).
+
+Dans un premier temps, ces diverses données ont été collectées et retranscrites dans une google sheet, cette googlesheet doit ensuite être importée. Pour ce faire, on utilise la fonction "read" et on colle le lien de la google sheet en le mettant en format "csv". Ile est nécessaire que ces ces données soient filtrées pour supprimer les "NA" c'est-à-dire les données non encodées pour avoir des résulats plus clairs. Ils sont clairs certes mais doivent être également exploitables sous forme de graphiques, voilà pourquoi, pour bien commencer à travailler, on définit les variables numériques et les variables facteurs. En dernier lieu, on effectue quelques tests et graphiques afin de pouvoir analyser et représenter les résultats de cette expérience. 
 
 ```{r setup, include=FALSE}
 #packages
 SciViews::R
 library(skimr)
 library(visdat)
+library(viridis)
 ```
 
 
-```{r data}
+```{r importation data}
 #import data
 
 #biometry_2018 <- read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv ")
@@ -38,7 +41,7 @@ summary(biometry_2018)
 ```
 
 ```{r}
-filter(biometry_2018,genre != "NA") -> biometry
+filter(biometry_2018,genre != "NA", hainaut!= "n") -> biometry
 ```
 
 ```{r}
@@ -58,69 +61,114 @@ biometry$alcool <- as.numeric(biometry$alcool)
 biometry$fastfood <- as.numeric(biometry$fastfood)
 ```
 
+```{r}
+visdat::vis_dat(biometry)
+```
+
 
 # Résultats
 
+##Test
+
+###Test de Student
 
 ```{r Test de Student}
 skim(biometry_2018)
 ```
 
+####Distribution du poids par genre pour la biométrie humaine
 
 ```{r graphique masse et genre}
-chart(biometry_2018, masse ~ genre %col=% genre) + geom_boxplot(na.rm = TRUE) 
+chart(biometry_2018, masse_corr ~ genre %fill=% genre) + geom_boxplot(na.rm = TRUE)+
+  scale_fill_viridis_d()+
+  ylab("Masse (kg)")+ 
+  xlab("Genre")
 ```
  
- On observe que les hommes ont une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
+  On observe que les hommes tendent à avoir une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
  Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :
+
+H0 : les moyennes du poids des hommes et des femmes sont égales
+H1 : les moyennes du poids des hommes et des femmes sont différentes
  
 ```{r test de student}
-t.test(data = biometry_2018, masse ~ genre,
+t.test(data = biometry_2018, masse_corr ~ genre,
   alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
 ```
 
-On doit rejeter H0 car la p-value est plus inférieure que le seuil alpha
+Prenons une valeur de α de 5% (α = 0,05). On compare cette valeur de α avec notre valeur de p qui est de : p-value = 1.095e-08
+
+On doit rejeter H0 car p<<<<α, il se situe donc dans la zone de rejet.
+
 
 
 ```{r bartlett test pour biometry_2018}
-bartlett.test(data = biometry_2018, masse ~ genre)
+bartlett.test(data = biometry_2018, masse_corr ~ genre)
 
 ```
 
 Nous rejettons H0 car il n'y a pas d'homoscédasticité.
 
+
+####Masse en fonction du genre
 ```{r bartlett graphique violin}
-chart(data = biometry_2018, masse ~ genre) +
+chart(data = biometry_2018, masse_corr ~ genre) +
   geom_violin() +
   geom_jitter(width = 0.05, alpha = 0.5) +
   geom_point(data = group_by(biometry_2018, genre) %>.%
-    summarise(., means = mean(masse, na.rm = TRUE)),
-    f_aes(means ~ genre), size = 3, col = "red")
-
+    summarise(., means = mean(masse_corr, na.rm = TRUE)),
+    f_aes(means ~ genre), size = 3, col = "red")+
+  ylab("Masse (kg)")+ 
+  xlab("Genre")
 ```
 
 On voit avec le point rouge dans les formes la moyenne.
 
 ```{r anova de biometry_2018}
-anova(anova. <- lm(data = biometry_2018, masse ~ genre))
+anova(anova. <- lm(data = biometry_2018, masse_corr ~ genre))
 
 ```
 
 La valeur de P est très faible par rapport au seuil alpha donc nous rejetons H0. Nous pouvons maintenant calculer et visionner la distribution les résidus.
 
+##Graphiques
+
 ```{r}
-chart(data = biometry, ~ age %col=% genre %fill=% genre | acti_profession) + 
-  geom_histogram(binwidth = 5)
+Genre <- as.table(c(
+  "Homme"   = 103,
+  "Femme"    = 109))
 ```
- Ce graphique permet une vue d'ensemble des données. On observe que la plus part de l'enchantillon est sédentaire mais il y n'y a pas de différence significative en focntion des genres. On voit aussi qu'une majorité de l'échantillon est compris entre 15 et 25 ans et que c'est meme personne sont plus sédentaire. 
- 
+
+
+###Répartition des individus suivant le genre
 ```{r}
-chart(data = biometry, ~ factor(0) %fill=% hainaut) +
-  geom_bar(width = 1) + 
-  coord_polar("y", start = 0) +
-  theme_void() + scale_fill_manual(values = c("grey", "pink"))
+chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
+  geom_bar(width = 1, stat = "identity") +
+  geom_text(f_aes(cumsum(rev(n)) - rev(n)/2  ~ 1.2, label = rev(n))) +
+  labs(fill = "Genre") +
+  coord_polar(theta = "y") +
+  theme_void()+ 
+  scale_fill_manual(values = c("darkmagenta", "pink"))
+
 ```
- On voit qu'une petite partie ne vient pas du haineaut et notre but est de detrminer l'obésité dans le haineaut paeticulièrement il faut donc prendre en compte ces données. 
+  Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant infimement supérieur.
+
+###Histogramme montrant la distribution de la masse des hommes et des femmes suivant leur activité professionnelle
+```{r}
+chart(data = biometry, ~ masse_corr %col=% genre %fill=% genre | acti_profession) + 
+  geom_histogram(binwidth = 5)+
+   ylab("Dénombrement")+ 
+  xlab("Masse (kg)")
+```
+  Ce graphique permet une vue d'ensemble des données. On consate que la majorité des personnes interrogées sont sédentaires avec une majeure tendance pour les femmes. Qui plus est, il est clairement remarquable que les masses les plus élevées ont été enregistrées chez ces mêmes personnes sédentaires ce qui nous conforte dans l'idée que la sédentarité peut être l'une des causes de surpoids.
+  
+###Masse des hommes et des femmes en fonction de leur âge
+```{r} 
+chart(data = biometry, masse_corr ~ age %col=% genre | genre) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Age [a]", y = "Masse [kg]")
+```
+ Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accrître avec lâge d'avantage chez les hommes que chez les femmes.
  
 ```{r}
 chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
@@ -129,6 +177,7 @@ chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
   theme_void() 
 ```
   Ce graphique permet de voir la repartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
+>Je ne prends pas la décision de le supprimer moi mais je trouverais plus judicieux d'utiliser un graphique en camembert pour mettre en avant la répartition de l'obésité (laura t.)
   
 ```{r}
 chart(data = biometry, ~ acti_physique %col=% genre %fill=% genre) + 
