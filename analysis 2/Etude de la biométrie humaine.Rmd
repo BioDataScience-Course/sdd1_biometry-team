@@ -60,7 +60,7 @@ bartlett.test(data = biometry_2018, masse ~ genre)
 
 ```
 
-Nousrejettons H0 car il n'y a pas d'homoscédasticité.
+Nous rejettons H0 car il n'y a pas d'homoscédasticité.
 
 ```{r bartlett graphique violin}
 chart(data = biometry_2018, masse ~ genre) +
