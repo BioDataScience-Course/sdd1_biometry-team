@@ -1,7 +1,7 @@
 ---
 title: "Etude de la biométrie humaine"
-author: "Laura Braeckevelt"
-date:"14/11/2018"
+author: "Laura Braeckevelt, Laura Toubeau, Margaux Renier, Lisa Mussoi"
+date: "14/11/2018"
 output: html_document
 ---
 
@@ -9,12 +9,12 @@ output: html_document
 Nous avons récolté des données concernant la biométrie humaine et intérroger des personnes sur leur habitude alimentaire ainsi que sur leur travail afin de pouvoir les analyser.
 
 # But
-Récolte de données sur la biométrie humaines dans le but de les analyser et tirer des conclusions.
+Récolte de données sur la biométrie humaines dans le but de les analyser et tirer des conclusions, et observer l'obésité dans le haineaut particulièrement.
 
 # Matériels et méthodes
 
 Nous avons interrogé plusieurs personnes entre une tranche d'âge de 15 à 70 ans. Nous avons pris leur poids avec la même balance afin de conserver la même erreur. Nous l'avons ensuite converti avec l'erreur de la balance en laboratoire. Un mètre ruban nous a servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
-nous avons ensuite posé plusieurs questions concernant : l'âge, le poids, le genre, leur activité physique, la profession (sédentaire, intermédiaire, active), la consommation d'alcool, le nombre de fast-food, nombre de repas, le grignotage, nombre de comsommation de viande et s'ils habitaient dans le Hainaut. 
+nous avons ensuite posé plusieurs questions concernant : l'âge, le poids, le genre, leur activité physique, la profession (sédentaire, intermédiaire, active), la consommation d'alcool, le nombre de fast-food, nombre de repas, le grignotage, nombre de comsommation de viande et s'ils habitaient dans le Hainaut. Dans 1 premier temps, on rentre ces données récolter dans une google sheet, on importe ensuite cette googlesheet. Pour importer ces données on utilise la fonction "read" ensuite on colle le lien de la google sheet en le mettant en format "csv". Ensuite on résume les données et on les filtres pour supprimer les "NA" donc les données non encodée pour avoir des résulats plus clairs. Et pour bine commencer à travailler on défini les varibles nuémriques et les variables facteurs. Ensuite on effectue quelques tests et quelque graphique afin de pouvoir analyser et montrer les resultats de cette expérience. 
 
 ```{r setup, include=FALSE}
 #packages
@@ -33,12 +33,39 @@ biometry_2018 <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX
 write(biometry_2018, file = "../biometry_2018.rds", type = "rds")
 ```
 
+```{r}
+summary(biometry_2018)
+```
+
+```{r}
+filter(biometry_2018,genre != "NA") -> biometry
+```
+
+```{r}
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+
+```{r}
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+```{r}
+biometry$alcool <- as.numeric(biometry$alcool)
+```
+
+```{r}
+biometry$fastfood <- as.numeric(biometry$fastfood)
+```
+
+
 # Résultats
 
 
 ```{r Test de Student}
 skim(biometry_2018)
 ```
+
 
 ```{r graphique masse et genre}
 chart(biometry_2018, masse ~ genre %col=% genre) + geom_boxplot(na.rm = TRUE) 
@@ -80,4 +107,57 @@ anova(anova. <- lm(data = biometry_2018, masse ~ genre))
 ```
 
 La valeur de P est très faible par rapport au seuil alpha donc nous rejetons H0. Nous pouvons maintenant calculer et visionner la distribution les résidus.
+
+```{r}
+chart(data = biometry, ~ age %col=% genre %fill=% genre | acti_profession) + 
+  geom_histogram(binwidth = 5)
+```
+ Ce graphique permet une vue d'ensemble des données. On observe que la plus part de l'enchantillon est sédentaire mais il y n'y a pas de différence significative en focntion des genres. On voit aussi qu'une majorité de l'échantillon est compris entre 15 et 25 ans et que c'est meme personne sont plus sédentaire. 
+ 
+```{r}
+chart(data = biometry, ~ factor(0) %fill=% hainaut) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() + scale_fill_manual(values = c("grey", "pink"))
+```
+ On voit qu'une petite partie ne vient pas du haineaut et notre but est de detrminer l'obésité dans le haineaut paeticulièrement il faut donc prendre en compte ces données. 
+ 
+```{r}
+chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() 
+```
+  Ce graphique permet de voir la repartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
+  
+```{r}
+chart(data = biometry, ~ acti_physique %col=% genre %fill=% genre) + 
+  geom_histogram(binwidth = 2)
+```
+  On remarque une decroissance lorsqu'on avance dans les heures de sport par semaine, la plus grande partie fait 0h de sport mais on remarque qu'un partie est comprise entre 1 et 10h de sport ceci  infleunce donc aussi le poid chez une personne. 
+  
+```{r}
+chart(biometry,taille~masse %col=% genre) +
+  geom_point() + labs(x = "masse", y  = "taille") 
+```
+On remarque c'est plus au moins proprotionnel (sauf quelque exeption) la grande majorité à un poids qui est proportionnel à leurs taille ce qui montre que le hainaut n'est pas en obésit. De plus on observe que la plus part des femmes sont plus légère et plus petite que les hommes. 
+
+```{r}
+
+```
+
+  
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
 
