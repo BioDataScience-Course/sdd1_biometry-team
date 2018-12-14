@@ -239,13 +239,31 @@ chart(data = biometry, ~ masse_corr %col=% genre %fill=% genre | acti_profession
 ```
   Ce graphique permet une vue d'ensemble des données. On consate que la majorité des personnes interrogées sont sédentaires avec une majeure tendance pour les femmes. Qui plus est, il est clairement remarquable que les masses les plus élevées ont été enregistrées chez ces mêmes personnes sédentaires ce qui nous conforte dans l'idée que la sédentarité peut être l'une des causes de surpoids.
   
-###Masse des hommes et des femmes en fonction de leur âge
+###Masse des hommes et des femmes en fonction de leur âge avec observation de l'activité professionnelle 
 ```{r} 
-chart(data = biometry, masse_corr ~ age %col=% genre | genre) +
+chart(data = biometry, masse_corr ~ age %col=% acti_profession | genre) +
   geom_point(alpha = 0.5) +
   labs(x = "Age [a]", y = "Masse [kg]")
 ```
- Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accrître avec lâge d'avantage chez les hommes que chez les femmes.
+ Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accrître avec lâge d'avantage chez les hommes que chez les femmes. Avec ce graphique on remarque que l'activité professionel n'influence pas beaucoup la masse ce qui est étonnnant. En effet chez les femmes, on remarque que certes les sédentaires ont une masse plus lourdes mais on remarque des femmes actives avec une masse supérieure à un bon nombre de sédentaire. Chez les hommes, on voit que beaucoup d'actif sont plus lourd que la majorité des sédentaire.
+ 
+ 
+###Masse des hommes et des femmes en fonctions de leurs avec avec une jauge du nombre de fastfood par semaine. 
+```{r}
+chart(data = biometry, masse_corr ~ age %col=% fastfood | genre) +
+  geom_point() +
+  labs(x = "Age", y = "Masse [kg]")
+```
+ 
+ Ce graphique nous permet de voir l'influence des fatsfood sur le poid. Dans un premier temps on remarque que chez les jeune (jusque 20-25 ans) le nombre de fastfood par semaine n'influence pas beaucoup leurs poids, on peut voir que entre 40 et 80kg chez les jeunes les fatsfood vont de 0 à 3 par semaine sans différence marquante dans leurs poid sauf une ou 2 exeption. Chez les personne plus agées (40 à 60ans et plus) meme conclusion on en voit pas différence significative au niveau des fastfood entre les différents poid, on voit que les personne plus lourdes ne mange pas spécialement plus de fastfood et que les personnes plus mince n'en mange pas spécialement moins. Mais le taille n'est pas prise en compte dans ce graphique donc on ne sait pas vraiment determiné si il y obésité ou non. 
+ 
+###Graphique de la masse en focntion de l'activité physique  
+```{r}
+chart(data = biometry, masse ~ acti_physique) +
+  geom_violin() 
+```
+ L'activité influence le poid, jusqu'a 70kg on voit que le nombre d'heure de sport par semaine est très grand et qu'il diminue lorsque que l'on augmente dans la masse. 
+ 
  
 ```{r}
 chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
@@ -272,7 +290,7 @@ On remarque c'est plus au moins proprotionnel (sauf quelque exeption) la grande 
 
 ```
 
-  
+  >Il faudrai ajouter un graphique avec l'alcool mais je n'ai plus d'idée pour le tyep de graphe et une fois qu'on réussi à mettre l'imc le comparer avec le tour de hance etc. (Lisa)
  
  
 
