@@ -86,43 +86,119 @@ chart(biometry_2018, masse_corr ~ genre %fill=% genre) + geom_boxplot(na.rm = TR
 ```
  
   On observe que les hommes tendent à avoir une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
- Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :
+ Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :  
 
-H0 : les moyennes du poids des hommes et des femmes sont égales
-H1 : les moyennes du poids des hommes et des femmes sont différentes
+H0 : les moyennes du poids des hommes et des femmes sont égales  
+H1 : les moyennes du poids des hommes et des femmes sont différentes  
  
 ```{r test de student}
 t.test(data = biometry_2018, masse_corr ~ genre,
   alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
 ```
 
-Prenons une valeur de α de 5% (α = 0,05). On compare cette valeur de α avec notre valeur de p qui est de : p-value = 1.095e-08
+Prenons une valeur de α de 5% (α = 0,05). On compare cette valeur de α avec notre valeur de p qui est de : p-value = 1.095e-08.  
 
-On doit rejeter H0 car p<<<<α, il se situe donc dans la zone de rejet.
+On doit rejeter H0 car p<<<<α, il se situe donc dans la zone de rejet.  
 
+###Test de l'Anova à un facteur
 
+Les tests t de Student est limité à la comparaison de deux populations. Aussi, poursuivons notre analyse de la biométrie humaine en comparant simultanément les hommes et les femmes des différents types d'activités professionnelles, ce qui nous donne au totale six sous-populations à comparer.  
 
-```{r bartlett test pour biometry_2018}
-bartlett.test(data = biometry_2018, masse_corr ~ genre)
-
+```{r}
+biometry %>.%
+  mutate(., group  = labelise(
+    factor(paste(acti_profession, genre, sep = "-")),
+    "Groupe activité professionnelle - genre", units = NA)) ->
+  biometry_anova
 ```
 
-Nous rejettons H0 car il n'y a pas d'homoscédasticité.
+```{r}
+biometry_anova %>.%
+  mutate(., masse_corr2 = labelise(
+    as.numeric(masse_corr / 176,6),
+    "Ratio masse / masse totale max", units = NA)) %>.%
+  select(., genre, acti_profession, group, masse_corr2) ->
+  biometry_anova
+skimr::skim(biometry_anova)
+```
 
-
-####Masse en fonction du genre
-```{r bartlett graphique violin}
-chart(data = biometry_2018, masse_corr ~ genre) +
+####Masse en fonction des groupes d'hommes et de femmes
+```{r}
+chart(data = biometry_anova, masse_corr2 ~ group) +
   geom_violin() +
   geom_jitter(width = 0.05, alpha = 0.5) +
-  geom_point(data = group_by(biometry_2018, genre) %>.%
-    summarise(., means = mean(masse_corr, na.rm = TRUE)),
-    f_aes(means ~ genre), size = 3, col = "red")+
-  ylab("Masse (kg)")+ 
-  xlab("Genre")
+  geom_point(data = group_by(biometry_anova, group) %>.%
+    summarise(., means = mean(masse_corr2, na.rm = TRUE)),
+    f_aes(means ~ group), size = 3, col = "red")+
+  ylab("Ratio masse / masse totale max ")
+```
+On distingue en rouge la moyenne et les observations individuelles en noir semi-transparent superposées à des graphiques en violon.  
+
+Pour que l'ANOVA puisse être appliquée deux conditions sont absolument nécessaires :  
+1) Distribution normale des résidus  
+2) Il doit y avoir homoscédaticité  
+
+La condition d'homoscédaticité peutêtre vérifiée à l'aide d'un test de Bartlett. Ses hypothèses sont :  
+H0:Il y a homoscédaticité   
+H1:Il y n'y a pas d'homoscédaticité, on parle alors d'hétéroscédaticité  
+
+
+
+Considérons un seuil α de 5% pour nos tests. 
+
+```{r bartlett test pour biometry_2018}
+bartlett.test(data = biometry_anova, masse_corr2 ~ group)
+
 ```
 
-On voit avec le point rouge dans les formes la moyenne.
+Nous rejettons H0 car il n'y a pas d'homoscédasticité.  
+
+Essayons de stabiliser la variance avce le logarithme népérien de masse_corr.  
+```{r}
+biometry_anova %>.%
+  mutate(., log_masse_corr2 = ln(masse_corr2)) ->
+  biometry_anova
+bartlett.test(data = biometry_anova, log_masse_corr2 ~ group)
+```
+La variance n'est pas stabilisée.  
+
+Une transformation à l'aide de puissance peut être réalisée:  
+```{r}
+biometry_anova %>.%
+  mutate(., masse5 = masse_corr2^6) ->
+  biometry_anova
+
+bartlett.test(data = biometry_anova, masse5 ~ group)
+```
+Cette transformation ne stabilise pas la variance. Peu importe les modifications apportées à notres jeu de données, nous restons en-dessous du seuil α de 5%.  
+
+Sans cette condition d'homoscédaticité, le test de l'ANOVA n'est pas applicable et non adéquat. Il faut donc réaliser un test de Kruskal-Wallis.  
+
+###Test de Kruskal-Wallis
+
+Le test de Kuskal-Wallis utilise les hypothèses suivantes :  
+H0 : Les rangs moyens sont les mêmes.  
+H1 : Il existe au moins deux rangs moyens différents.  
+
+```{r}
+kruskal.test(data = biometry_anova, masse_corr2 ~ group)
+```
+Nous rejettons ici H0 au seuil α de 5% ce qui signifie qu'il y a au minimum une différence entre les ratios au seuil α de 5%.  
+
+Notre analyse n’est pas terminée. Nous devons maintenant réaliser un test post-hoc non paramétrique.  
+
+```{r}
+summary(kw_comp. <- nparcomp::nparcomp(data = biometry_anova, masse_corr2 ~ group))
+```
+
+```{r}
+plot(kw_comp.)
+```
+>Conclusion? (je ne sais pas quoi mettre laura t.)
+
+
+
+
 
 ```{r anova de biometry_2018}
 anova(anova. <- lm(data = biometry_2018, masse_corr ~ genre))
@@ -130,6 +206,7 @@ anova(anova. <- lm(data = biometry_2018, masse_corr ~ genre))
 ```
 
 La valeur de P est très faible par rapport au seuil alpha donc nous rejetons H0. Nous pouvons maintenant calculer et visionner la distribution les résidus.
+>Supprimer cette partie? Vu que l'anova ne peut normalement pa sêtre appliquée? (laura t.)
 
 ##Graphiques
 
@@ -176,7 +253,7 @@ chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
   coord_polar("y", start = 0) +
   theme_void() 
 ```
-  Ce graphique permet de voir la repartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
+  Ce graphique permet de voir la répartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
 >Je ne prends pas la décision de le supprimer moi mais je trouverais plus judicieux d'utiliser un graphique en camembert pour mettre en avant la répartition de l'obésité (laura t.)
   
 ```{r}
