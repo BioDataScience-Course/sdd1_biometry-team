@@ -234,7 +234,6 @@ chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
 
 ```
 
-
   Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant infimement supérieur.
 
 ###Histogramme montrant la distribution de la masse des hommes et des femmes suivant leur activité professionnelle
@@ -256,17 +255,23 @@ chart(data = biometry, masse_corr ~ age %col=% acti_profession | genre) +
 ```
  
  
- Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accrître avec lâge d'avantage chez les hommes que chez les femmes. Avec ce graphique on remarque que l'activité professionel n'influence pas beaucoup la masse ce qui est étonnnant. En effet chez les femmes, on remarque que certes les sédentaires ont une masse plus lourdes mais on remarque des femmes actives avec une masse supérieure à un bon nombre de sédentaire. Chez les hommes, on voit que beaucoup d'actif sont plus lourd que la majorité des sédentaire.
+ Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accroître avec l'âge davantage chez les hommes que chez les femmes. Avec ce graphique on remarque que l'activité professionelle n'influence pas beaucoup la masse ce qui est étonnnant. En effet chez les femmes, on remarque que certes la sédentarité est en corrélation avec une masse plus lourde mais on remarque également des femmes actives avec une masse supérieure à celle de ces mêmes personnes sédentaires. Chez les hommes, on voit que beaucoup d'actifs sont plus lourds que la majorité des sédentaires
  
+```{r}
+chart(data = biometry, ~ fastfood | imc_schedule ) +
+  stat_density() +
+  ylab("Densité")
+```
+>Lier avec le graphique qui suit? 
  
 ###Masse des hommes et des femmes en fonctions de leurs avec avec une jauge du nombre de fastfood par semaine. 
 ```{r}
-chart(data = biometry, masse_corr ~ age %col=% fastfood | genre) +
-  geom_point() +
-  labs(x = "Age", y = "Masse [kg]")
+chart(data = biometry, masse_corr ~ age %col=% fastfood) +
+  geom_point(na.rm = TRUE) +
+  labs(x = "Age [a]", y = "Masse [kg]")
 ```
  
- Ce graphique nous permet de voir l'influence des fatsfood sur le poid. Dans un premier temps on remarque que chez les jeune (jusque 20-25 ans) le nombre de fastfood par semaine n'influence pas beaucoup leurs poids, on peut voir que entre 40 et 80kg chez les jeunes les fatsfood vont de 0 à 3 par semaine sans différence marquante dans leurs poid sauf une ou 2 exeption. Chez les personne plus agées (40 à 60ans et plus) meme conclusion on en voit pas différence significative au niveau des fastfood entre les différents poid, on voit que les personne plus lourdes ne mange pas spécialement plus de fastfood et que les personnes plus mince n'en mange pas spécialement moins. Mais le taille n'est pas prise en compte dans ce graphique donc on ne sait pas vraiment determiné si il y obésité ou non. 
+ Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Dans un premier temps on remarque que chez les jeune (jusque 20-25 ans) le nombre de fastfood par semaine n'influence pas beaucoup leurs poids, on peut voir que entre 40 et 80kg chez les jeunes les fatsfood vont de 0 à 3 par semaine sans différence marquante dans leurs poid sauf une ou 2 exeptions. Chez les personnes plus agées (40 à 60ans et plus) même conclusion on ne voit pas différence significative au niveau des fastfood entre les différents poids, on voit que les personnes plus lourdes ne mange pas spécialement plus de fastfood et que les personnes plus mince n'en mange pas spécialement moins. 
  
 ###Graphique de la masse en focntion de l'activité physique  
 ```{r}
@@ -314,12 +319,24 @@ biometry <- mutate(biometry,
     imc < 18.5 ~ "sous poids",
     imc >= 18.5 & imc < 25 ~ "poids normal",
     imc >= 25 & imc < 30 ~ "surpoids",
-    imc >= 30 ~ "obese"
+    imc >= 30 ~ "obésité"
 ))
 
 biometry
 ```
  
+###Répartition des individus suivant leur position sur l'échelle d'IMC
+```{r}
+chart(data = biometry, ~ imc_schedule %fill=% imc_schedule) +
+  geom_bar(position = "dodge") +
+  ylab("Effectifs") +
+  scale_fill_viridis_d()+
+  xlab("IMC schedule")
+
+```
+ >Peut-être préférer ce type de graphique pour éviter la répétition des graphiques en camembert?
+ 
+###Répartition des individus suivant leur IMC
 ```{r}
 chart (biometry, ~ imc_schedule %fill=% imc_schedule )+
    geom_bar() + 
@@ -327,23 +344,57 @@ chart (biometry, ~ imc_schedule %fill=% imc_schedule )+
   theme_void() +
   scale_fill_viridis_d()
 ```
- 
+  Nous pouvons remarquer que sur 212 individus plus de la moitié (118) possèdent un poids pouvant être qualifié de normal selon l'échelle d'IMC (soit imc >= 18.5 & imc < 25). Néanmoins environ 35% des individus de cet échantillon sont également caractérisés par un imc supérieur à la moyenne avec 47 individus en surpoids et 33 qui souffrent d'obésité. La tendance pour un poids inférieur à la moyenne étant moindre avec 14 individus soit environ 7%. Nous pouvons donc retenir que même si plus de la moitié des personnes de cet échantillon ont un poids considéré comme "normal", une autre partie non négligeable possède un poids pouvant être qualifié de nocif pour un état de santé favorable.
  
  
  
  
   >Il faudrai ajouter un graphique avec l'alcool mais je n'ai plus d'idée pour le tyep de graphe et une fois qu'on réussi à mettre l'imc le comparer avec le tour de hance etc. (Lisa)
  
+
+ 
  
 
 
 
 
+###Répartition des différents stades sur l'échelle d'IMC suivant le tour de hanche, le tour de taille et le tour de poignet
+```{r}
+a <- chart(data = biometry, tour_hanche ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de hanche (cm)")
 
+b <- chart(data = biometry, tour_taille ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de taille (cm)")
 
+c <- chart(data = biometry, tour_poignet ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de poignet (cm)")
 
+combine_charts(list(a, b, c ), common.legend = TRUE)
+```
 
+Sur base de ce graphique, nous pouvons relever que les valeurs pour les deux variables "tour de hanche"" et "tour de taille" se répartissent de manière plus ou moins semblables ce qui peut nous indiquer d'une part une certaine corrélation entre la répartiton générale de ces valeurs et la corpulence de l'individu ainsi qu'une certaine proportionalité dans les mensurations de la personne.
+Aussi, les individus considérés comme souffrants d'obésité sont ceux qui présentent les valeurs les plus élevées de tour de hanche et de taille (allant de +/- 100 à 170cm), suivis des cas de surpoids, de poids normal et enfin de sous-poids, ce qui n'est pas surprenant.
+La mesure de ces parties du corps est donc un méthode assez représentative de la corpulence générale de la personne, pouvant laisse apparaître un certain surpoids ou au contraire une maigreur significative.
+En ce qui concerne la mesure du tour de poignet, elle permet d'appuyer les résultats précédents en terme de surpoids et d'obésité. Néanmoins en ce qui concerne la maigreur il ne s'agit pas d'un bon indicateur étant donné que certaines personnes ayant un poids normal ont un tour de poignet encore inférieur aux personnes en situation de sous-poids même si une légère tendance peut être remarquée avec une tendance globale accrûe chez ces personnes entre 13 et 18 cm. 
 
+###Illustration de la consommation d'alcool des différents individus suivant leur activité professionnelle
+```{r}
+chart(data = biometry, ~ alcool %fill=% acti_profession | acti_profession) +
+  geom_histogram(bins = 25) +
+  ylab("Effectifs") +
+  scale_fill_viridis_d()
+```
+
+Nous constatons qu'il n'y a pas une différence drastique dans la consommation d'alcool des personnes actives, intermédiaires et sédentaires. Sur base de ce graphique nous pouvons uniquement remarquer que les personnes actives et sédentaires ont tendance à consommer davantage d'alcool que les personnes intermédiaires. Cependant, les personnes sédentaires une tendance à la consommation d'alcool un peu plus élevées avec des consommations pour une petite minorité pouvant aller jusqu'à 42 verres par semaine.
 
 
 
