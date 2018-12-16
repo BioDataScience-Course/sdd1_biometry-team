@@ -31,7 +31,6 @@ Analyser les donées de la biométrie humaine à l'aide de différents individus
 chart(biometry, formula = height ~ weight %col=% gender) + geom_point(na.rm = TRUE)
 ```
 
-```
 
 # Conclusion
 
