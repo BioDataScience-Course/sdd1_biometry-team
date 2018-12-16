@@ -6,7 +6,7 @@ output: html_document
 ---
 
 # Introduction
-  Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que surleur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
+  Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que sur leur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
 
 # But
   Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfie, quant au taux de cas d'obésité dans le hainaut particulièrement.
@@ -82,13 +82,14 @@ skim(biometry_2018)
 chart(biometry_2018, masse_corr ~ genre %fill=% genre) + geom_boxplot(na.rm = TRUE)+
   scale_fill_viridis_d()+
   ylab("Masse (kg)")+ 
-  xlab("Genre")
+  xlab("Genre")+
+  stat_summary(geom = "point", fun.y="mean", col="red")
 ```
  
   On observe que les hommes tendent à avoir une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
  Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :  
 
-H0 : les moyennes du poids des hommes et des femmes sont égales  
+H0 : les moyennes du poids des hommes et des femmes ne sont pas significatvements différents  
 H1 : les moyennes du poids des hommes et des femmes sont différentes  
  
 ```{r test de student}
@@ -130,9 +131,13 @@ chart(data = biometry_anova, masse_corr2 ~ group) +
   geom_point(data = group_by(biometry_anova, group) %>.%
     summarise(., means = mean(masse_corr2, na.rm = TRUE)),
     f_aes(means ~ group), size = 3, col = "red")+
-  ylab("Ratio masse / masse totale max ")
+  ylab("Ratio masse / masse totale max ")+
+  coord_flip()
 ```
+
+
 On distingue en rouge la moyenne et les observations individuelles en noir semi-transparent superposées à des graphiques en violon.  
+
 
 Pour que l'ANOVA puisse être appliquée deux conditions sont absolument nécessaires :  
 1) Distribution normale des résidus  
@@ -228,6 +233,8 @@ chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
   scale_fill_manual(values = c("darkmagenta", "pink"))
 
 ```
+
+
   Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant infimement supérieur.
 
 ###Histogramme montrant la distribution de la masse des hommes et des femmes suivant leur activité professionnelle
@@ -237,6 +244,8 @@ chart(data = biometry, ~ masse_corr %col=% genre %fill=% genre | acti_profession
    ylab("Dénombrement")+ 
   xlab("Masse (kg)")
 ```
+  
+  
   Ce graphique permet une vue d'ensemble des données. On consate que la majorité des personnes interrogées sont sédentaires avec une majeure tendance pour les femmes. Qui plus est, il est clairement remarquable que les masses les plus élevées ont été enregistrées chez ces mêmes personnes sédentaires ce qui nous conforte dans l'idée que la sédentarité peut être l'une des causes de surpoids.
   
 ###Masse des hommes et des femmes en fonction de leur âge avec observation de l'activité professionnelle 
@@ -245,6 +254,8 @@ chart(data = biometry, masse_corr ~ age %col=% acti_profession | genre) +
   geom_point(alpha = 0.5) +
   labs(x = "Age [a]", y = "Masse [kg]")
 ```
+ 
+ 
  Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accrître avec lâge d'avantage chez les hommes que chez les femmes. Avec ce graphique on remarque que l'activité professionel n'influence pas beaucoup la masse ce qui est étonnnant. En effet chez les femmes, on remarque que certes les sédentaires ont une masse plus lourdes mais on remarque des femmes actives avec une masse supérieure à un bon nombre de sédentaire. Chez les hommes, on voit que beaucoup d'actif sont plus lourd que la majorité des sédentaire.
  
  
@@ -262,6 +273,7 @@ chart(data = biometry, masse_corr ~ age %col=% fastfood | genre) +
 chart(data = biometry, masse ~ acti_physique) +
   geom_violin() 
 ```
+
  L'activité influence le poid, jusqu'a 70kg on voit que le nombre d'heure de sport par semaine est très grand et qu'il diminue lorsque que l'on augmente dans la masse. 
  
  
@@ -271,6 +283,7 @@ chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
   coord_polar("y", start = 0) +
   theme_void() 
 ```
+  
   Ce graphique permet de voir la répartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
 >Je ne prends pas la décision de le supprimer moi mais je trouverais plus judicieux d'utiliser un graphique en camembert pour mettre en avant la répartition de l'obésité (laura t.)
   
@@ -278,18 +291,47 @@ chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
 chart(data = biometry, ~ acti_physique %col=% genre %fill=% genre) + 
   geom_histogram(binwidth = 2)
 ```
+ 
   On remarque une decroissance lorsqu'on avance dans les heures de sport par semaine, la plus grande partie fait 0h de sport mais on remarque qu'un partie est comprise entre 1 et 10h de sport ceci  infleunce donc aussi le poid chez une personne. 
   
 ```{r}
 chart(biometry,taille~masse %col=% genre) +
   geom_point() + labs(x = "masse", y  = "taille") 
 ```
-On remarque c'est plus au moins proprotionnel (sauf quelque exeption) la grande majorité à un poids qui est proportionnel à leurs taille ce qui montre que le hainaut n'est pas en obésit. De plus on observe que la plus part des femmes sont plus légère et plus petite que les hommes. 
 
+On remarque que c'est plus au moins proprotionnel (sauf quelque exeption) la grande majorité à un poids qui est proportionnel à leurs taille ce qui montre que le hainaut n'est pas en obésit. De plus on observe que la plus part des femmes sont plus légère et plus petite que les hommes. 
+
+
+##IMC 
 ```{r}
-
+biometry <- mutate(biometry, imc= masse / taille^2)
+biometry
 ```
 
+```{r}
+biometry <- mutate(biometry,
+  imc_schedule = case_when(
+    imc < 18.5 ~ "sous poids",
+    imc >= 18.5 & imc < 25 ~ "poids normal",
+    imc >= 25 & imc < 30 ~ "surpoids",
+    imc >= 30 ~ "obese"
+))
+
+biometry
+```
+ 
+```{r}
+chart (biometry, ~ imc_schedule %fill=% imc_schedule )+
+   geom_bar() + 
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_viridis_d()
+```
+ 
+ 
+ 
+ 
+ 
   >Il faudrai ajouter un graphique avec l'alcool mais je n'ai plus d'idée pour le tyep de graphe et une fois qu'on réussi à mettre l'imc le comparer avec le tour de hance etc. (Lisa)
  
  
