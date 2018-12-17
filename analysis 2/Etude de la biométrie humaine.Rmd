@@ -143,7 +143,7 @@ Pour que l'ANOVA puisse être appliquée deux conditions sont absolument nécess
 1) Distribution normale des résidus  
 2) Il doit y avoir homoscédaticité  
 
-La condition d'homoscédaticité peutêtre vérifiée à l'aide d'un test de Bartlett. Ses hypothèses sont :  
+La condition d'homoscédaticité peut être vérifiée à l'aide d'un test de Bartlett. Ses hypothèses sont :  
 H0:Il y a homoscédaticité   
 H1:Il y n'y a pas d'homoscédaticité, on parle alors d'hétéroscédaticité  
 
@@ -182,7 +182,7 @@ Sans cette condition d'homoscédaticité, le test de l'ANOVA n'est pas applicabl
 ###Test de Kruskal-Wallis
 
 Le test de Kuskal-Wallis utilise les hypothèses suivantes :  
-H0 : Les rangs moyens sont les mêmes.  
+H0 : Les rangs moyens sont significativement les mêmes.  
 H1 : Il existe au moins deux rangs moyens différents.  
 
 ```{r}
@@ -202,16 +202,6 @@ plot(kw_comp.)
 >Conclusion? (je ne sais pas quoi mettre laura t.)
 
 
-
-
-
-```{r anova de biometry_2018}
-anova(anova. <- lm(data = biometry_2018, masse_corr ~ genre))
-
-```
-
-La valeur de P est très faible par rapport au seuil alpha donc nous rejetons H0. Nous pouvons maintenant calculer et visionner la distribution les résidus.
->Supprimer cette partie? Vu que l'anova ne peut normalement pa sêtre appliquée? (laura t.)
 
 ##Graphiques
 
@@ -271,7 +261,7 @@ chart(data = biometry, masse_corr ~ age %col=% fastfood) +
   labs(x = "Age [a]", y = "Masse [kg]")
 ```
  
- Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Dans un premier temps on remarque que chez les jeune (jusque 20-25 ans) le nombre de fastfood par semaine n'influence pas beaucoup leurs poids, on peut voir que entre 40 et 80kg chez les jeunes les fatsfood vont de 0 à 3 par semaine sans différence marquante dans leurs poid sauf une ou 2 exeptions. Chez les personnes plus agées (40 à 60ans et plus) même conclusion on ne voit pas différence significative au niveau des fastfood entre les différents poids, on voit que les personnes plus lourdes ne mange pas spécialement plus de fastfood et que les personnes plus mince n'en mange pas spécialement moins. 
+ Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Dans un premier temps on remarque que chez les jeunes (jusque 20-25 ans) le nombre de fastfood par semaine n'influence pas beaucoup leurs poids, on peut voir que entre 40 et 80kg chez les jeunes les fatsfood vont de 0 à 3 par semaine sans différence marquante dans leurs poids sauf une ou 2 exeptions. Chez les personnes plus agées (40 à 60ans et plus) même conclusion on ne voit pas différence significative au niveau des fastfood entre les différents poids, on voit que les personnes plus lourdes ne mange pas spécialement plus de fastfood et que les personnes plus mince n'en mange pas spécialement moins. 
  
 ###Graphique de la masse en focntion de l'activité physique  
 ```{r}
@@ -279,7 +269,7 @@ chart(data = biometry, masse ~ acti_physique) +
   geom_violin() 
 ```
 
- L'activité influence le poid, jusqu'a 70kg on voit que le nombre d'heure de sport par semaine est très grand et qu'il diminue lorsque que l'on augmente dans la masse. 
+ L'activité influence le poids, jusqu'a 70kg on voit que le nombre d'heure de sport par semaine est très grand et qu'il diminue lorsque que l'on augmente dans la masse. 
  
  
 ```{r}
@@ -289,7 +279,7 @@ chart(data = biometry, ~ factor(0) %fill=% acti_profession) +
   theme_void() 
 ```
   
-  Ce graphique permet de voir la répartition des ctivités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
+  Ce graphique permet de voir la répartition des activités physiques, car cela peut influencer l'obésité et l'on observe plus de sédentaire que d'actif ou d'intermédiare on peut donc penser que l'échantillon tend plus vers l'obésité. (cela n'est qu'une hypohèse )
 >Je ne prends pas la décision de le supprimer moi mais je trouverais plus judicieux d'utiliser un graphique en camembert pour mettre en avant la répartition de l'obésité (laura t.)
   
 ```{r}
@@ -304,12 +294,12 @@ chart(biometry,taille~masse %col=% genre) +
   geom_point() + labs(x = "masse", y  = "taille") 
 ```
 
-On remarque que c'est plus au moins proprotionnel (sauf quelque exeption) la grande majorité à un poids qui est proportionnel à leurs taille ce qui montre que le hainaut n'est pas en obésit. De plus on observe que la plus part des femmes sont plus légère et plus petite que les hommes. 
+On remarque que c'est plus au moins proprotionnel (sauf quelques exeptions) la grande majorité à un poids qui est proportionnel à leurs taille ce qui montre que le hainaut n'est pas en obésité. De plus on observe que la plus part des femmes sont plus légère et plus petite que les hommes. 
 
 
 ##IMC 
 ```{r}
-biometry <- mutate(biometry, imc= masse / taille^2)
+biometry <- mutate(biometry, imc= masse_corr / taille^2)
 biometry
 ```
 
@@ -334,7 +324,10 @@ chart(data = biometry, ~ imc_schedule %fill=% imc_schedule) +
   xlab("IMC schedule")
 
 ```
- >Peut-être préférer ce type de graphique pour éviter la répétition des graphiques en camembert?
+ 
+ 
+Avec ce graphique, nous pouvons remarquer que notre échantillon a une majorité de personne en poids normal. Nous pouvons aussi constater que la proportion des autres catégories n'est pas à négliger 
+>je en sais pas comment finir l'analyse
  
 ###Répartition des individus suivant leur IMC
 ```{r}
@@ -346,16 +339,6 @@ chart (biometry, ~ imc_schedule %fill=% imc_schedule )+
 ```
   Nous pouvons remarquer que sur 212 individus plus de la moitié (118) possèdent un poids pouvant être qualifié de normal selon l'échelle d'IMC (soit imc >= 18.5 & imc < 25). Néanmoins environ 35% des individus de cet échantillon sont également caractérisés par un imc supérieur à la moyenne avec 47 individus en surpoids et 33 qui souffrent d'obésité. La tendance pour un poids inférieur à la moyenne étant moindre avec 14 individus soit environ 7%. Nous pouvons donc retenir que même si plus de la moitié des personnes de cet échantillon ont un poids considéré comme "normal", une autre partie non négligeable possède un poids pouvant être qualifié de nocif pour un état de santé favorable.
  
- 
- 
- 
-  >Il faudrai ajouter un graphique avec l'alcool mais je n'ai plus d'idée pour le tyep de graphe et une fois qu'on réussi à mettre l'imc le comparer avec le tour de hance etc. (Lisa)
- 
-
- 
- 
-
-
 
 
 ###Répartition des différents stades sur l'échelle d'IMC suivant le tour de hanche, le tour de taille et le tour de poignet
@@ -421,4 +404,5 @@ combine_charts(list(d, e, f), common.legend = TRUE)
 ```
 
 
+#conclusion 
 
