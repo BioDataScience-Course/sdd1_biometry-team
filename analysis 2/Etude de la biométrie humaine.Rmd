@@ -248,6 +248,11 @@ chart(data = biometry, masse_corr ~ age %col=% acti_profession | genre) +
  Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes à partir de la vingtaine. De plus, cette masse a tendance à s'accroître avec l'âge davantage chez les hommes que chez les femmes. Avec ce graphique on remarque que l'activité professionelle n'influence pas beaucoup la masse ce qui est étonnnant. En effet chez les femmes, on remarque que certes la sédentarité est en corrélation avec une masse plus lourde mais on remarque également des femmes actives avec une masse supérieure à celle de ces mêmes personnes sédentaires. Chez les hommes, on voit que beaucoup d'actifs sont plus lourds que la majorité des sédentaires
  
 ```{r}
+biometry$imc_schedule <- as.factor(biometry$imc_schedule)
+```
+ 
+ 
+```{r}
 chart(data = biometry, ~ fastfood | imc_schedule ) +
   stat_density() +
   ylab("Densité")
@@ -314,29 +319,19 @@ biometry <- mutate(biometry,
 
 biometry
 ```
+
  
-###Répartition des individus suivant leur position sur l'échelle d'IMC
+###Répartition des individus suivant leur position sur l'échetlle d'IMC
+
 ```{r}
 chart(data = biometry, ~ imc_schedule %fill=% imc_schedule) +
   geom_bar(position = "dodge") +
   ylab("Effectifs") +
   scale_fill_viridis_d()+
   xlab("IMC schedule")
+```
 
-```
- 
- 
-Avec ce graphique, nous pouvons remarquer que notre échantillon a une majorité de personne en poids normal. Nous pouvons aussi constater que la proportion des autres catégories n'est pas à négliger 
->je en sais pas comment finir l'analyse
- 
-###Répartition des individus suivant leur IMC
-```{r}
-chart (biometry, ~ imc_schedule %fill=% imc_schedule )+
-   geom_bar() + 
-  coord_polar("y", start = 0) +
-  theme_void() +
-  scale_fill_viridis_d()
-```
+
   Nous pouvons remarquer que sur 212 individus plus de la moitié (118) possèdent un poids pouvant être qualifié de normal selon l'échelle d'IMC (soit imc >= 18.5 & imc < 25). Néanmoins environ 35% des individus de cet échantillon sont également caractérisés par un imc supérieur à la moyenne avec 47 individus en surpoids et 33 qui souffrent d'obésité. La tendance pour un poids inférieur à la moyenne étant moindre avec 14 individus soit environ 7%. Nous pouvons donc retenir que même si plus de la moitié des personnes de cet échantillon ont un poids considéré comme "normal", une autre partie non négligeable possède un poids pouvant être qualifié de nocif pour un état de santé favorable.
  
 
@@ -378,30 +373,6 @@ chart(data = biometry, ~ alcool %fill=% acti_profession | acti_profession) +
 ```
 
 Nous constatons qu'il n'y a pas une différence drastique dans la consommation d'alcool des personnes actives, intermédiaires et sédentaires. Sur base de ce graphique nous pouvons uniquement remarquer que les personnes actives et sédentaires ont tendance à consommer davantage d'alcool que les personnes intermédiaires. Cependant, les personnes sédentaires une tendance à la consommation d'alcool un peu plus élevées avec des consommations pour une petite minorité pouvant aller jusqu'à 42 verres par semaine.
-
-```{r}
-
-d <- chart(data = biometry, ~ acti_physique(0) %fill=% imc_schedule) +
-  geom_bar(width = 1) + 
-  coord_polar("y", start = 0) +
-  theme_void() +
-  scale_fill_viridis_d()
-
-e <- chart(data = biometry, ~ alcool(0) %fill=% imc_schedule) +
-  geom_bar(width = 1) + 
-  coord_polar("y", start = 0) +
-  theme_void() +
-  scale_fill_viridis_d()
-
-f <- chart(data = biometry, ~ fastfood(0) %fill=% imc_schedule) +
-  geom_bar(width = 1) + 
-  coord_polar("y", start = 0) +
-  theme_void() +
-  scale_fill_viridis_d()
-
-
-combine_charts(list(d, e, f), common.legend = TRUE)
-```
 
 
 #conclusion 
