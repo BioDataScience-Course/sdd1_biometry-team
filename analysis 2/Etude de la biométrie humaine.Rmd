@@ -2,7 +2,12 @@
 title: "Etude de la biométrie humaine"
 author: "Laura Braeckevelt, Laura Toubeau, Margaux Renier, Lisa Mussoi"
 date: "14/11/2018"
-output: html_document
+output: 
+  html_notebook:
+    html_notebook:
+    Fig_caption: yes
+    number_section: yes
+    toc: yes
 ---
 
 # Introduction
