@@ -13,6 +13,8 @@ output:
 # Introduction
   Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que sur leur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
 
+![*L'homme de Vitruve*](pictures/homme_vitruve.jpg)
+
 # But
   Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfondie, quant au taux de cas d'obésité dans le hainaut particulièrement.
 
@@ -428,6 +430,10 @@ On constate aussi avec le graphique représentant l’imc que ceux-ci sont gén�
 Les personnes souffrant d’obésité ont un tour de taille et un tour de hanche plus élevé que la moyenne ce qui  est logique considérant leur poids élevé
 Les personnes ayant une activité professionnelle sédentaire ont une consommation plus grande en alcool que les autres.
 
-#conclusion 
+#Conclusion 
 
-
+On constate en général que les hommes ont un poids plus élevé que celui des femmes cela peut s'expliquer par le fait que leur masse musculaire est plus grande à cause la testostérone et ils sont généralement plus grand et nous avons vu que le poids était proportionnel à la taille.
+Les jeunes ont tendance à avoir un poids plus équilibrer qu'il fasse du sport, qu'ils boivent de l'alcool ou non. Ils ont une meilleure conditions physique et récupère plus vite que les adultes car ils sont encore en pleine croissance. Donc même s'ils mangent gras ou consomment beaucoup de viandes, cela n'a pas un réel effet sur leur imc.
+Les personnesâgées mangent moins bien et n'ont pplus d'activité physique fréquente ni d'activité professionnelle nonplus donc ils ont tendance à prende du poids.
+Nous constatons aussi que l'activité professionnelle n'est pas un bon indicateur pour savoir si les personnes qui sont moins actives au travail sont plus lourds car il y a d'autres facteurs à prendre en compte comme les repas oou encore le sport et la quantité de verre d'alcool par semaine. 
+Sur nos graphique on s'aperçoit également que le hainaut n'est pas en obésité. Nous avons une grande majorité des personnes en poids normal. 
