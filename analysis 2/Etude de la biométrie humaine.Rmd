@@ -2,11 +2,18 @@
 title: "Etude de la biométrie humaine"
 author: "Laura Braeckevelt, Laura Toubeau, Margaux Renier, Lisa Mussoi"
 date: "14/11/2018"
-output: html_document
+output: 
+  html_notebook:
+    html_notebook:
+    Fig_caption: yes
+    number_section: yes
+    toc: yes
 ---
 
 # Introduction
   Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que sur leur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
+
+![*L'homme de Vitruve*](pictures/homme_vitruve.jpg)
 
 # But
   Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfondie, quant au taux de cas d'obésité dans le hainaut particulièrement.
@@ -14,7 +21,7 @@ output: html_document
 # Matériels et méthodes
 
   Nous avons interrogé plusieurs personnes dans une tranche d'âge de 15 à 70 ans. Ensuite, nous les avons pesé en considérant une seule et unique balance afin de conserver la même erreur pour toutes les valeurs. C'est d'ailleurs pour cette raison qu'une conversion en fonction de l'erreur calculée pour la balance de laboratoire fût nécessaire. Un mètre ruban nous a également servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
-De plus, plusieurs questions leur ont été posées concernant : leur âge, leur genre, leur activité physique, leur profession (sédentaire, intermédiaire, active), leur consommation d'alcool, le nombre de fast-food par mois, de repas et de grignotage(s) par jour, la comsommation de viande hebdomadaire (quantitative) et leur lieu de résidence (dans le Hainaut ou non).
+De plus, plusieurs questions leur ont été posées concernant : leur âge, leur genre, leur activité physique, leur profession (sédentaire, intermédiaire, active), leur consommation d'alcool(nombre de verre par semaine), le nombre de fast-food par mois, de repas et de grignotage(s) par jour, la comsommation de viande hebdomadaire (quantitative) et leur lieu de résidence (dans le Hainaut ou non).
 
 Dans un premier temps, ces diverses données ont été collectées et retranscrites dans une google sheet, cette googlesheet doit ensuite être importée. Pour ce faire, on utilise la fonction "read" et on colle le lien de la google sheet en le mettant en format "csv". Ile est nécessaire que ces ces données soient filtrées pour supprimer les "NA" c'est-à-dire les données non encodées pour avoir des résulats plus clairs. Ils sont clairs certes mais doivent être également exploitables sous forme de graphiques, voilà pourquoi, pour bien commencer à travailler, on définit les variables numériques et les variables facteurs. En dernier lieu, on effectue quelques tests et graphiques afin de pouvoir analyser et représenter les résultats de cette expérience. 
 
@@ -224,7 +231,7 @@ chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
 
 ```
 
-  Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant infimement supérieur.
+  Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant supérieur.
 
 ###Histogramme montrant la distribution de la masse des hommes et des femmes suivant leur activité professionnelle
 ```{r}
@@ -372,7 +379,7 @@ chart(data = biometry, ~ alcool %fill=% acti_profession | acti_profession) +
 Nous constatons qu'il n'y a pas une différence drastique dans la consommation d'alcool des personnes actives, intermédiaires et sédentaires. Sur base de ce graphique nous pouvons uniquement remarquer que les personnes actives et sédentaires ont tendance à consommer davantage d'alcool que les personnes intermédiaires. Cependant, les personnes sédentaires une tendance à la consommation d'alcool un peu plus élevées avec des consommations pour une petite minorité pouvant aller jusqu'à 42 verres par semaine.
 
 ```{r}
-c <- filter (biometry, imc_schedule == "sous_poids")%>.%
+ c <- filter (biometry, imc_schedule == "sous_poids")%>.%
   chart(., ~ imc_schedule %fill=% acti_profession) +
   geom_bar(width = 1) + 
   coord_polar("y", start = 0) +
@@ -411,5 +418,22 @@ chart(data = biometry, ~ fastfood | imc_schedule ) +
   ylab("Densité")
 ```
 
-#conclusion 
+#Discussion
 
+Le test de student effectué nous montre que le poids des femmes et des hommes sont différents et il n’est pas dû au hasard de l’échantillonage. 
+Les personnes ayant participé au sondage sont essentiellement des femmes (109 femmes pour 103 hommes).
+Les femmes ont tendance à avoir un travail sédentaire serait-il une raison au surpoids ? Cependant elles ont tout de même un poids moins élevée en moyenne que les hommes.
+Le poids fluctuent de manière étrange et nous obtenons des résultats inattendus comme des femmes actives qui ont un poids plus élevé que celles qui sont sédentaires. On observe ce même phénomène chez les hommes.  Est-ce que l’activité professionnelle n’aurait pas d’influence sur le poids ?
+Les fastfood n’influent par sur le poids des jeunes car ceux-ci sont en pleine croissance et un métabolisme plus performant. Et il n’y a pas de lien entre les personnes ayant un poids plus élevé et le nombre de fastfood par semaine donc le sfastfoods n’auraient pas d’influence réelle
+Par contre le sport a une influence sur le poids, en effet les personnes pratiquant du sport ont un poids moins élevé que celle qui ne le pratique pas ou peu. Le poid est généralement proportionnele a la taille ce qui montrerait que le hainaut n’est pas en surpoids en moyenne.
+On constate aussi avec le graphique représentant l’imc que ceux-ci sont généralement en poids normal et très peu sont en en obésité 
+Les personnes souffrant d’obésité ont un tour de taille et un tour de hanche plus élevé que la moyenne ce qui  est logique considérant leur poids élevé
+Les personnes ayant une activité professionnelle sédentaire ont une consommation plus grande en alcool que les autres.
+
+#Conclusion 
+
+On constate en général que les hommes ont un poids plus élevé que celui des femmes cela peut s'expliquer par le fait que leur masse musculaire est plus grande à cause la testostérone et ils sont généralement plus grand et nous avons vu que le poids était proportionnel à la taille.
+Les jeunes ont tendance à avoir un poids plus équilibrer qu'il fasse du sport, qu'ils boivent de l'alcool ou non. Ils ont une meilleure conditions physique et récupère plus vite que les adultes car ils sont encore en pleine croissance. Donc même s'ils mangent gras ou consomment beaucoup de viandes, cela n'a pas un réel effet sur leur imc.
+Les personnesâgées mangent moins bien et n'ont pplus d'activité physique fréquente ni d'activité professionnelle nonplus donc ils ont tendance à prende du poids.
+Nous constatons aussi que l'activité professionnelle n'est pas un bon indicateur pour savoir si les personnes qui sont moins actives au travail sont plus lourds car il y a d'autres facteurs à prendre en compte comme les repas oou encore le sport et la quantité de verre d'alcool par semaine. 
+Sur nos graphique on s'aperçoit également que le hainaut n'est pas en obésité. Nous avons une grande majorité des personnes en poids normal. 
