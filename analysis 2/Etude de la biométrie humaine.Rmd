@@ -391,7 +391,7 @@ Nous pouvons donc réaliser notre ANOVA :
 ```{r}
 anova(anova. <- lm(data = biometry_women, masse_corr ~ group))
 ```
->Que faire ensuite? Serait-ce possible qu'il n'y ait pas de différence vu que p > à 0.05?
+Nous rejettons H0 car p-value > que 0.05. Nous pouvons donc dire que les femmes sédentaires ont un poids plus élevé que celles actives et intermédiaires. Ce n'est pas du au hasard de l'échantilonnage.
 
 
 ```{r}
@@ -468,7 +468,8 @@ summary(kw_comp. <- nparcomp::nparcomp(data = biometry_man, masse_corr ~ group))
 ```{r}
 plot(kw_comp.)
 ```
->Conclusion? 
+
+Il y a une différence significative entre les hommes actifs - intermédiaire car leur p-value est inférieure au seuil a. Par contre il n'y a pas de différence significative entre les homme actifs - sédentaire et les hommes intermédiaire - sédentaire. Donc nous pouvons conclure que le poids entre les hommes actifs et le poids des hommes sédentaire représente une réelle différence.
 
 
 
