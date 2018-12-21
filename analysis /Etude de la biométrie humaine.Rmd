@@ -1,0 +1,487 @@
+---
+title: "Etude de la biométrie humaine"
+author: "Laura Braeckevelt, Laura Toubeau, Margaux Renier, Lisa Mussoi"
+date: "14/11/2018"
+output: 
+  html_document:
+    Fig_caption: yes
+    highlight: tango
+    number_section: yes
+    theme: paper
+    toc: yes
+---
+
+# Introduction
+  Nous avons interrogé une série de personnes, selon des critères bien définis, sur leurs caractéristiques physiques (taille, masse, mensurations), leurs habitudes alimentaires ainsi que sur leur activité physique aussi bien de nature sportive que dans la cadre professionnel. Ces données une fois répertoriées, nous nous sommes lancés dans une analyse de la biométrie humaine.
+
+![*L'homme de Vitruve*](pictures/homme_vitruve.jpg)
+
+# But
+  Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfondie, quant aux taux d'obésité dans le hainaut spécifiquement et les facteurs qui y sont liés.
+
+# Matériels et méthodes
+
+  Nous avons interrogé plusieurs personnes dans une tranche d'âge de 15 à 70 ans. Ensuite, nous les avons pesé en considérant une seule et unique balance afin de conserver la même erreur pour toutes les valeurs. C'est d'ailleurs pour cette raison qu'une conversion en fonction de l'erreur calculée pour la balance de laboratoire fût nécessaire. Un mètre ruban nous a également servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
+De plus, plusieurs questions leur ont été posées concernant : leur âge, leur genre, leur activité physique, leur profession (sédentaire, intermédiaire, active), leur consommation d'alcool(nombre de verre par semaine), le nombre de fast-food par mois, de repas et de grignotage(s) par jour, la comsommation de viande hebdomadaire (quantitative) et leur lieu de résidence (dans le Hainaut ou non).
+
+Dans un premier temps, ces diverses données ont été collectées et retranscrites dans une google sheet, cette googlesheet doit ensuite être importée. Pour ce faire, on utilise la fonction "read" et on colle le lien de la google sheet en le mettant en format "csv". Ile est nécessaire que ces ces données soient filtrées pour supprimer les "NA" c'est-à-dire les données non encodées pour avoir des résulats plus clairs. Ils sont clairs certes mais doivent être également exploitables sous forme de graphiques, voilà pourquoi, pour bien commencer à travailler, on définit les variables numériques et les variables facteurs. En dernier lieu, on effectue quelques tests et graphiques afin de pouvoir analyser et représenter les résultats de cette expérience. 
+
+```{r setup, include=FALSE}
+#packages
+SciViews::R
+library(skimr)
+library(visdat)
+library(viridis)
+```
+
+
+```{r importation data}
+#import data
+
+#biometry_2018 <- read$csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv ")
+
+biometry_2018 <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
+write(biometry_2018, file = "../biometry_2018.rds", type = "rds")
+```
+
+```{r}
+summary(biometry_2018)
+```
+
+```{r}
+filter(biometry_2018,genre != "NA", hainaut!= "n") -> biometry
+```
+
+```{r}
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+
+```{r}
+biometry$acti_physique <- as.numeric(biometry$acti_physique)
+```
+
+```{r}
+biometry$alcool <- as.numeric(biometry$alcool)
+```
+
+```{r}
+biometry$fastfood <- as.numeric(biometry$fastfood)
+```
+
+```{r}
+visdat::vis_dat(biometry)
+```
+
+
+# Résultats
+
+##Graphiques
+
+```{r}
+Genre <- as.table(c(
+  "Homme"   = 103,
+  "Femme"    = 109))
+```
+
+
+###Répartition des individus suivant le genre
+```{r}
+chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
+  geom_bar(width = 1, stat = "identity") +
+  geom_text(f_aes(cumsum(rev(n)) - rev(n)/2  ~ 1.2, label = rev(n))) +
+  labs(fill = "Genre") +
+  coord_polar(theta = "y") +
+  theme_void()+ 
+  scale_fill_manual(values = c("darkmagenta", "pink"))
+
+```
+
+  Il y a une répartition égale des hommes et des femmes, le nombre de femmes étant légèrement supérieur.
+
+###Masse des hommes et des femmes en fonction de leur âge 
+
+```{r}
+filter(biometry,age > 15 ) -> biometry
+```
+
+
+```{r}
+biometry <- mutate (biometry,
+  age_schedule = case_when (
+    age < 20 ~ "Adolescents",
+    age >= 20 & age < 40 ~ "Jeunes adultes",
+    age >= 40 & age < 60 ~ "Adultes",
+    age >= 60 ~ "Aînés"
+))
+
+```
+
+```{r} 
+chart(data = biometry, masse_corr ~ age_schedule %fill=% genre) +
+  geom_violin()+
+  labs(x = "Échelle d'âge", y = "Masse [kg]")
+```
+ 
+  Nous avons regroupé les individus par tranches d'âge allant de 15 à 74 ans. Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes. Nous remarquons pour les femmes que la masse s'accroît avec l'âge pour la majorité, ceci est observable par le fait qu'à partir de 60ans la masse est strictement supérieure à 57kg ce qui n'est pas le cas pour les autres tranches d'âges. Chez les hommes, il en est de même lorsque l'on se cconcentre sur la majorité des individus même si des valeurs extrêmes ont été enregistrées à l'âge adulte avec des masses pouvant aller jusque 177kg.
+  L'âge peut donc influencer la masse des individus.
+ 
+ 
+###Distribution de la masse des individus des différentes tranches d'âges sur base du nombre de fastfood par semaine. 
+
+```{r}
+chart(data = biometry, masse_corr ~ fastfood | age_schedule) +
+  geom_point(na.rm = TRUE) +
+  labs(x = "Nombre de fastfood/semaine", y = "Masse [kg]")
+```
+ 
+  Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Nous pouvons déjà remarquer dans un premier temps que la fréquentation des fastfood est un phénomène lié à l'âge, en effet une fois la soixantaine passée, le taux de fréquentation des fastfood n'excède pas 1 fois par semaine et ce chiffre n'est que pour une minorité, la majorité des individus n'y vont pas du tout. On remarque que chez les adolescents et jeunes adultes le nombre de fastfood par semaine n'influence pas beaucoup le poids. Chez les adolescents, entre 40 et 80kg la fréquentation des fatsfoods va de 0 à 3 fois par semaine sans différence marquante dans leur poids sauf une ou 2 exeptions. Chez les jeunes adultes, le taux de fréquentation augmente mais des personnes ayant un poids plus élevé sont enregistrées pour une fréquentation des fastfoods s'élevant à seulement 1 fois par semaine, la majorité des individus allant 2 fois par semaine ayant tendance à présenter un poids moins élevé que ces derniers. Chez les adultes (40 à 60ans) même conclusion on ne voit pas une différence de poids significative entre les personnes allant 1 fois, 2 fois ou encore 3 fois par semaine dans un fasfood. 
+  Les personnes ayant un poids plus élevé ne mange donc pas spécialement plus de fastfood et les personnes plus mince n'en mange pas spécialement moins. 
+  La différence de poids entre les jeunes et les personnes plus âgées constatée par ce graphique précédent n'est donc pas liée au taux de fréquentation des fastfoods. 
+
+####IMC 
+```{r}
+biometry <- mutate(biometry, imc= masse_corr / taille^2)
+biometry
+```
+
+
+```{r}
+biometry <- mutate(biometry,
+  imc_schedule = case_when(
+    imc < 18.5 ~ "sous_poids",
+    imc >= 18.5 & imc < 25 ~ "poids_normal",
+    imc >= 25 & imc < 30 ~ "surpoids",
+    imc >= 30 ~ "obésité"
+))
+
+biometry
+```
+
+```{r}
+biometry$imc_schedule <- as.factor(biometry$imc_schedule)
+```
+
+```{r}
+filter(biometry,imc_schedule != "NA") -> biometry
+```
+
+
+###Répartition des individus suivant leur position sur l'échelle d'IMC
+
+```{r}
+biometry%>.%
+  group_by(., imc_schedule)%>.%
+  summarise(., n()) -> imc_schedule_count
+```
+
+
+```{r}
+a <- chart(data = biometry, ~ imc_schedule) +
+  geom_bar(position = "dodge") +
+  ylab("Effectifs") +
+  scale_fill_viridis_d()+
+  xlab("Echelle d'IMC")
+
+b <- ggpubr::ggtexttable(head(imc_schedule_count))
+
+combine_charts(list(a, b))
+```
+
+ Un tableau recensant précisément le nombre d'individus pour chacun des paliers sur l'échelle d'IMC a été réalisé en parallèle du graphique. Nous pouvons remarquer que sur 212 individus plus de la moitié (118) possèdent un poids pouvant être qualifié de normal selon l'échelle d'IMC (soit imc >= 18.5 & imc < 25). Néanmoins environ 35% des individus de cet échantillon sont également caractérisés par un imc supérieur à la moyenne avec 47 individus en surpoids et 33 qui souffrent d'obésité. La tendance pour un poids inférieur à la moyenne étant moindre avec 14 individus soit environ 7%. Nous pouvons donc retenir que même si plus de la moitié des personnes de cet échantillon ont un poids considéré comme "normal", une autre partie non négligeable possède un poids pouvant être qualifié de nocif pour un état de santé favorable. Mais l'IMC bien qu'étant très populaire est à prendre avec des pincettes, vu que dans sa formule il ne prend ne compte que le poids et la taille, il ne faut pas oublié que les muscules sont plus lourd que la graisse une personne peut donc etre musclée par exemple etre plus lourde que la moyenne sans pour autant etre en obésité. 
+ 
+###Répartiton au sein de chacun des paliers d'IMC du degré d'activité dans le cadre de la profession
+```{r}
+ c <- filter (biometry, imc_schedule == "sous_poids")%>.%
+  chart(., ~ imc_schedule %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_viridis_d()
+
+ d <- filter (biometry, imc_schedule == "poids_normal")%>.%
+  chart(., ~ imc_schedule %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_viridis_d()  
+ 
+ e <- filter (biometry, imc_schedule == "surpoids")%>.%
+  chart(., ~ imc_schedule %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_viridis_d()  
+ 
+ f <- filter (biometry, imc_schedule == "obésité")%>.%
+  chart(., ~ imc_schedule %fill=% acti_profession) +
+  geom_bar(width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_viridis_d()  
+ 
+ combine_charts(list(c, d, e, f), common.legend = TRUE)
+```
+
+  Ce graphique permet une vue d'ensemble des données. On constate que la majorité des personnes interrogées sont sédentaires. Cette sédentarité n'est pas un facteur déterminant de surpoids ou d'obésité étant donné qu'il y a quasi autant de personnes sédentaires chez les personnes en sous-poids que chez les personnes dites obèses. 
+  On remarque que l'activité professionelle n'influence pas beaucoup l'IMC ce qui est étonnnant.
+
+###Distribution de l'activité physique au sein des différents paliers de l'échelle d'IMC
+```{r}
+l <- chart(data = biometry, acti_physique ~ imc_schedule %col=% imc_schedule) +
+  geom_violin()+
+  labs(x = "Echelle d'IMC", y = "Activité physique (heures/semaine)")+
+stat_summary(geom="point", fun.y= "mean", color = "blue", size=2)+
+   theme(axis.text.x = element_text(angle=45,vjust = 1,hjust = 1))
+
+m <- chart(data = biometry, ~ acti_physique %fill=% genre) +
+  geom_histogram(bins = 25) +
+  ylab("Effectifs") +
+  xlab("Activité physique (heures/semaine)")
+  scale_fill_viridis_d()
+
+ combine_charts(list(l, m), common.legend = TRUE)
+```
+
+  On peut oberver sur ce graphique que la grande majorité des personnes victimes de surpoids ou d'obésité ont tendance à ne pas effectuer d'activité physique, ceci pourrait donc être considéré comme un facteur d'obésité. De plus, les personnes ayant un poids normal et en sous-poids effectuent une activité physique dite plus régulière avec pour certains plus de 5 heures de sport par semaine. Un histogramme a été réalisé en parallèle afin de déterminer si il existait une différence entre le nombre d'heures de sport effectuées par les femmes et par les hommes. Visiblement ce n'est pas le cas, hommes et femmes effectuent un nombre d'heure de sport similaire (entre 0 et 10h), et pour chaque genre il existe des excpetions allant jusqu'à plus de 30h de sport par semaine, certaines personnes étant tout simplement plus sportives que d'autres.
+
+###Répartition des différents paliers sur l'échelle d'IMC suivant le tour de hanche, le tour de taille et le tour de poignet
+```{r}
+a <- chart(data = biometry, tour_hanche ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de hanche (cm)")
+
+b <- chart(data = biometry, tour_taille ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de taille (cm)")
+
+c <- chart(data = biometry, tour_poignet ~ imc_schedule %fill=% imc_schedule) +
+  geom_violin() +
+  coord_flip()+
+  xlab("IMC schedule")+
+  ylab("Tour de poignet (cm)")
+
+combine_charts(list(a, b, c ), common.legend = TRUE)
+```
+
+  Sur base de ce graphique, nous pouvons relever que les valeurs pour les deux variables "tour de hanche"" et "tour de taille" se répartissent de manière plus ou moins semblables ce qui peut nous indiquer d'une part une certaine corrélation entre la répartiton générale de ces valeurs et la corpulence de l'individu ainsi qu'une certaine proportionalité dans les mensurations de la personne.
+Aussi, les individus considérés comme souffrants d'obésité sont ceux qui présentent les valeurs les plus élevées de tour de hanche et de taille (allant de +/- 100 à 170cm), suivis des cas de surpoids, de poids normal et enfin de sous-poids, ce qui n'est pas surprenant.
+La mesure de ces parties du corps est donc un méthode assez représentative de la corpulence générale de la personne, pouvant laisse apparaître un certain surpoids ou au contraire une maigreur significative.
+En ce qui concerne la mesure du tour de poignet, elle permet d'appuyer les résultats précédents en terme de surpoids et d'obésité. Néanmoins en ce qui concerne la maigreur il ne s'agit pas d'un bon indicateur étant donné que certaines personnes ayant un poids normal ont un tour de poignet encore inférieur aux personnes en situation de sous-poids même si une légère tendance peut être remarquée avec une tendance globale accrûe chez ces personnes entre 13 et 18 cm. 
+
+###Distribution du nombre de grignotage par jour pour chacun des paliers de l'échelle d'IMC
+```{r}
+chart(data = biometry, ~ grignotage | imc_schedule ) +
+  stat_density(na.rm=TRUE) +
+  ylab("Densité")
+```
+
+  Contrairement à toute attente, le grignotge n'est pas source d'obésité. Les personnes considérées comme obèses ou encore en surpoids ne grignotent pas davantage que des personnes ayant un poids considéré comme normal. Au contraire, on remarque clairement sur ce graphique que les personnes en sous_poids grignotent davantage que ces personnes en surpoids ou obèses.
+  Le nombre de grignotages par jour n'est donc pas un facteur permettant de comprendre la source de l'obésité.
+  
+###Distibution du nombre de repas par jour pour chacun des paliers sur l'échelle d'IMC
+```{r}
+chart(data = biometry, ~ repas %fill=% imc_schedule) +
+  geom_histogram(bins = 25) +
+  ylab("Effectifs") +
+  scale_fill_viridis_d()
+```
+  
+  Une grande partie des personnes interrogées n'excèdent pas 3 repas par jour (la majorité étant à 3). Contrairement à ce qui pourrait être attendu, les personnes vicitmes de maigreurs n'effectuent pas moins de repas que les personnes de poids normal. Qui plus est, les personnes obèses ou en surpoids ne présentent pas non plus une tendance à effectuer plus de repas que les autres.
+  Le nombre de repas par jour n'est donc pas un facteur influençant l'obésité.
+
+###Illustration de la consommation d'alcool des différents individus suivant leur activité professionnelle
+```{r}
+chart(data = biometry, ~ alcool %fill=% acti_profession | acti_profession) +
+  geom_histogram(bins = 25) +
+  ylab("Effectifs") +
+  scale_fill_viridis_d()
+```
+
+  Nous constatons qu'il n'y a pas une différence drastique dans la consommation d'alcool des personnes actives, intermédiaires et sédentaires. Sur base de ce graphique nous pouvons uniquement remarquer que les personnes actives et sédentaires ont tendance à consommer davantage d'alcool que les personnes intermédiaires. Cependant, les personnes sédentaires une tendance à la consommation d'alcool un peu plus élevées avec des consommations pour une petite minorité pouvant aller jusqu'à 42 verres par semaine.
+
+##Test
+
+###Test de Student
+
+```{r Test de Student}
+skim(biometry_2018)
+```
+
+####Distribution du poids par genre pour la biométrie humaine
+
+```{r graphique masse et genre}
+chart(biometry_2018, masse_corr ~ genre %fill=% genre) + geom_boxplot(na.rm = TRUE)+
+  scale_fill_viridis_d()+
+  ylab("Masse (kg)")+ 
+  xlab("Genre")+
+  stat_summary(geom = "point", fun.y="mean", col="red")
+```
+ 
+  On observe que les hommes tendent à avoir une masse plus importante que celle des femmes mais cette différence est-elle significative ou peut-elle être juste liée au hasard de l’échantillonnage ?
+ Pour y répondre, nous devons élaborer un test d’hypothèse qui va confronter les hypothèses suivantes (en se basant sur les moyennes) :  
+
+H0 : les moyennes du poids des hommes et des femmes ne sont pas significatvements différents  
+H1 : les moyennes du poids des hommes et des femmes sont différentes  
+ 
+```{r test de student}
+t.test(data = biometry_2018, masse_corr ~ genre,
+  alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
+```
+
+Prenons une valeur de α de 5% (α = 0,05). On compare cette valeur de α avec notre valeur de p qui est de : p-value = 1.095e-08. On doit rejeter H0 car car p<<<<α,    il se situe donc dans la zone de rejet.   
+
+ 
+  
+###Test de l'Anova à un facteur
+>Pourquoi cela ne s'affiche pas comme un titre quand on fait knit?
+
+
+  Les tests t de Student est limité à la comparaison de deux populations. Aussi, poursuivons notre analyse de la biométrie humaine en comparant simultanément les hommes et les femmes des différents types d'activités professionnelles, ce qui nous donne au totale six sous-populations à comparer.  
+
+```{r}
+filter(biometry ,genre != "h") -> biometry_women
+```
+
+
+```{r}
+biometry_women %>.%
+  mutate(., group  = labelise(
+    factor(paste(acti_profession, genre, sep = "-")),
+    "Groupe activité professionnelle - genre", units = NA)) ->
+  biometry_women
+```
+
+####Masse des femmes en fonction de leur activité professionnelle
+```{r}
+chart(data = biometry_women, masse_corr ~ group) +
+  geom_violin() +
+  geom_jitter(width = 0.05, alpha = 0.5) +
+  geom_point(data = group_by(biometry_women, group) %>.%
+    summarise(., means = mean(masse_corr, na.rm = TRUE)),
+    f_aes(means ~ group), size = 3, col = "red")+
+  ylab("Masse (g)")
+```
+
+  On distingue en rouge la moyenne et les observations individuelles en noir semi-transparent superposées à des graphiques en violon.  
+
+Pour que l'ANOVA puisse être appliquée deux conditions sont absolument nécessaires :  
+1) Distribution normale des résidus  
+2) Il doit y avoir homoscédaticité  
+
+La condition d'homoscédaticité peut être vérifiée à l'aide d'un test de Bartlett. Ses hypothèses sont :  
+H0:Il y a homoscédaticité   
+H1:Il y n'y a pas d'homoscédaticité, on parle alors d'hétéroscédaticité  
+
+
+Considérons un seuil α de 5% pour nos tests. 
+
+```{r bartlett test}
+bartlett.test(data = biometry_women, masse_corr ~ group)
+```
+
+Nous ne rejettons pas H0 car il y a homoscédasticité. En effet p-value > 0.05 qui est notre seuil α.
+
+Nous pouvons donc réaliser notre ANOVA :
+
+```{r}
+anova(anova. <- lm(data = biometry_women, masse_corr ~ group))
+```
+Nous rejettons H0 car p-value > que 0.05. Nous pouvons donc dire que les femmes sédentaires ont un poids plus élevé que celles actives et intermédiaires. Ce n'est pas du au hasard de l'échantilonnage.
+
+
+```{r}
+filter(biometry ,genre != "f") -> biometry_man
+```
+
+```{r}
+biometry_man %>.%
+  mutate(., group  = labelise(
+    factor(paste(acti_profession, genre, sep = "-")),
+    "Groupe activité professionnelle - genre", units = NA)) ->
+  biometry_man
+```
+
+####Masse des hommes en fonction de leur activité professionnelle
+```{r}
+chart(data = biometry_man, masse_corr ~ group) +
+  geom_violin() +
+  geom_jitter(width = 0.05, alpha = 0.5) +
+  geom_point(data = group_by(biometry_man, group) %>.%
+    summarise(., means = mean(masse_corr, na.rm = TRUE)),
+    f_aes(means ~ group), size = 3, col = "red")+
+  ylab("Masse (g)")
+```
+
+
+
+Considérons un seuil α de 5% pour nos tests. 
+
+```{r}
+bartlett.test(data = biometry_man, masse_corr ~ group)
+```
+
+  Nous rejettons H0 car il n'y a pas homoscédasticité. En effet p-value << 0.05 qui est notre seuil α.
+
+Essayons de stabiliser la variance avce le logarithme népérien de masse_corr.  
+```{r}
+biometry_man %>.%
+  mutate(., log_masse_corr = ln(masse_corr)) ->
+  biometry_man
+bartlett.test(data = biometry_man, log_masse_corr ~ group)
+```
+La variance n'est pas stabilisée.  
+
+Une transformation à l'aide de puissance peut être réalisée:  
+```{r}
+biometry_man %>.%
+  mutate(., masse5 = masse_corr^5) ->
+  biometry_man
+
+bartlett.test(data = biometry_man, masse5 ~ group)
+```
+Cette transformation ne stabilise pas la variance. Peu importe les modifications apportées à notres jeu de données, nous restons en-dessous du seuil α de 5%.  
+
+Sans cette condition d'homoscédaticité, le test de l'ANOVA n'est pas applicable et non adéquat. Il faut donc réaliser un test de Kruskal-Wallis.  
+
+###Test de Kruskal-Wallis
+
+Le test de Kuskal-Wallis utilise les hypothèses suivantes :  
+H0 : Les rangs moyens sont significativement les mêmes.  
+H1 : Il existe au moins deux rangs moyens différents.  
+
+```{r}
+kruskal.test(data = biometry_man, masse_corr ~ group)
+```
+Nous rejettons ici H0 au seuil α de 5% ce qui signifie qu'il y a au minimum une différence entre les masses au seuil α de 5%.  
+
+Notre analyse n’est pas terminée. Nous devons maintenant réaliser un test post-hoc non paramétrique.  
+
+```{r}
+summary(kw_comp. <- nparcomp::nparcomp(data = biometry_man, masse_corr ~ group))
+```
+
+```{r}
+plot(kw_comp.)
+```
+
+Il y a une différence significative entre les hommes actifs - intermédiaire car leur p-value est inférieure au seuil a. Par contre il n'y a pas de différence significative entre les homme actifs - sédentaire et les hommes intermédiaire - sédentaire. Donc nous pouvons conclure que le poids entre les hommes actifs et le poids des hommes sédentaire représente une réelle différence.
+
+
+
+#Discussion
+Les différents test sont effectué pour montrer que les resultats obtenus sont (ou pas) dû au hasard, la conclusion de ces différents test se trouve sous c'est dernier. Les différents graphiques sont utilisé de facon à faire ressortir des données qui auraient un lien entre elles et qui pourrai s'influencer l'une l'autre ainsi que le poids qui est notre question principale. Durant le rapport la variable "IMC" à été intégrée. Cette variable permet uen meilleure vison des resultats car elle determine si il y a obésité ou non et jusqu'a quel point. De plus, l'IMC ne prend en compte que le poids et la taille si on fait le test à la maison on peut voir parfois que l'IMC peut afficher "surpoids" alors que la personne est juste plus musclée ou à juste un petit ventre ou tout au contraire une personne affichée "sous poids" alors qu'elle est juste plus grande et mince ou qui est juste à la limite du "poids normal" et du "sous poids". L'IMC est donc un bon indicateur mais n'est pas à faire confiance à 100%. 
+Grace aux différent graphique on remarque que l'age influence le poids ce qui est assez logique car un jeune est en croissance, bouge plus (sauf exeption) et a un metabolisme plus rapide qu'une personne plus agée ce qui explique que les jeunes peuvent aller plus au fastfood sans frocément voir leurs poids changer. En effet on a observer une tendance marquée pour les jeunes d'aller au fastfood ce qui est facilement explicable aussi car à cause des cours c'est plus simple d'aller au fastfood entre amis que de se faire à manger. Au niveau de l'activité professionelle on voit que la plupart de l'echantillon est sédentaire mais qu'il n'y a pas d'influence sur le poids, ceci peut s'expliquer si une partie non négligeable de l'echantillon est adolescent ou jeune adulte car etre étudiant est considéré comme etre sédentaire or comme expliqué précédement un jeune de prend pas beaucoup de poids, de plus on peut avoir un métier sédentaire et faire beaucoup d'activité physique. En restant dans l'activité physique, elle influence beaucoup car selon les résultats, les personnes en faisant pas d'activité physique ont plus tendance à etre en obésité tandis que ceux qui partique du sport régulièrement on un poids normal voir un sous poids. Si les fastfood n'ont pas d'influence on peut penser que les grignotages ou la consomation d'alcool en auront mais non, pour le grignotage c'est les gens en sous poids qui en font le plus mais on peut penser que si il y a beaucoup de grignotages il y a peu voir pas de repas. Mais lorsqu'on étudie le nombre de repas par jour on voti qu'il n'influence pas non plus mais on ne connait ni la quantité ni la qualité des repas. L'alcool n'influence pas non plus mais on remarque quand meme une majorité de personne qui boivent de l'alcool chez les sédentaires. Les tour de hanche et de taille ont été mesuré et permettent de voir si l'IMC correspond à ces mesures vu que c'est proportionnel au poids, le tour du poignet lui n'est pas du tout fiable.
+
+
+#Conclusion 
+
+On constate en général que les hommes ont un poids plus élevé que celui des femmes cela peut s'expliquer par le fait que leur masse musculaire est plus grande à cause la testostérone et ils sont généralement plus grand et nous avons vu que le poids était proportionnel à la taille.
+Les jeunes ont tendance à avoir un poids plus équilibrer qu'il fasse du sport, qu'ils boivent de l'alcool ou non. Ils ont une meilleure conditions physique et récupère plus vite que les adultes car ils sont encore en pleine croissance. Donc même s'ils mangent gras ou consomment beaucoup de viandes, cela n'a pas un réel effet sur leur imc.
+Les personnes âgées mangent moins bien et n'ont plus d'activité physique fréquente ni d'activité professionnelle non plus donc ils ont tendance à prende du poids. Cartaines personne agée peuvent aussi en perdre à cause 
+Nous constatons aussi que l'activité professionnelle n'est pas un bon indicateur pour savoir si les personnes qui sont moins actives au travail sont plus lourds car il y a d'autres facteurs à prendre en compte comme les repas ou encore le sport et la quantité de verre d'alcool par semaine ou encore le grignotage qui n'inluence pas non plus.
+Sur nos graphique on s'aperçoit également que le hainaut n'est pas en obésité. Nous avons une grande majorité des personnes en poids normal avec comme influenceur principale, l'age et le sport. 
