@@ -18,13 +18,19 @@ output:
 
 ![*L'homme de Vitruve*](pictures/homme_vitruve.jpg)
 
+> GE: l'insertion d'une image est une bonne chose
+
 # But
   Récolte de données autour de la biométrie humaine afin de tirer des conclusions, suite à une analyse statistique appronfondie, quant aux taux d'obésité dans le hainaut spécifiquement et les facteurs qui y sont liés.
+
+> GE:  le but est très vague et ne donne pas vraiment la question de recherche que vous allez vous poser sur ces données.
 
 # Matériels et méthodes
 
   Nous avons interrogé plusieurs personnes dans une tranche d'âge de 15 à 70 ans. Ensuite, nous les avons pesé en considérant une seule et unique balance afin de conserver la même erreur pour toutes les valeurs. C'est d'ailleurs pour cette raison qu'une conversion en fonction de l'erreur calculée pour la balance de laboratoire fût nécessaire. Un mètre ruban nous a également servi à mesurer leur tour de poignet, leur tour de taille, leur tour de hanche et leur hauteur. 
 De plus, plusieurs questions leur ont été posées concernant : leur âge, leur genre, leur activité physique, leur profession (sédentaire, intermédiaire, active), leur consommation d'alcool(nombre de verre par semaine), le nombre de fast-food par mois, de repas et de grignotage(s) par jour, la comsommation de viande hebdomadaire (quantitative) et leur lieu de résidence (dans le Hainaut ou non).
+
+> GE: tout le paragraphe suivant n'est pas nécessaire 
 
 Dans un premier temps, ces diverses données ont été collectées et retranscrites dans une google sheet, cette googlesheet doit ensuite être importée. Pour ce faire, on utilise la fonction "read" et on colle le lien de la google sheet en le mettant en format "csv". Ile est nécessaire que ces ces données soient filtrées pour supprimer les "NA" c'est-à-dire les données non encodées pour avoir des résulats plus clairs. Ils sont clairs certes mais doivent être également exploitables sous forme de graphiques, voilà pourquoi, pour bien commencer à travailler, on définit les variables numériques et les variables facteurs. En dernier lieu, on effectue quelques tests et graphiques afin de pouvoir analyser et représenter les résultats de cette expérience. 
 
@@ -36,6 +42,7 @@ library(visdat)
 library(viridis)
 ```
 
+> GE: il est dommage de ne pas utiliser vos données sauvegarder depuis votre 
 
 ```{r importation data}
 #import data
@@ -45,6 +52,8 @@ library(viridis)
 biometry_2018 <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQoVtSWbENWzxbALxD0qyNDqxV4uSYqzLCtJgcNGE7ciT6nkWOjA9b6dMBHaSUY8Nw5f-mSpUEeN-3S/pub?output=csv", locale = locale(decimal_mark = ","))
 write(biometry_2018, file = "../biometry_2018.rds", type = "rds")
 ```
+
+> GE: la fonction summary() est intéressant pour prendre connaissance des données mais pas dans un rapport
 
 ```{r}
 summary(biometry_2018)
@@ -75,6 +84,8 @@ biometry$fastfood <- as.numeric(biometry$fastfood)
 visdat::vis_dat(biometry)
 ```
 
+> GE: la fonction vis_dat() est intéressant pour prendre connaissance des données mais pas dans un rapport
+> GE: L'importation, le rencodage et la sauvegarde des données provenant du net ne doit pas se trouver dans un rapport mais dans un script R de préférence.
 
 # Résultats
 
@@ -88,6 +99,7 @@ Genre <- as.table(c(
 
 
 ###Répartition des individus suivant le genre
+
 ```{r}
 chart(data = as_dataframe(Genre), n ~ 1 %fill=% factor(Var1, levels = Var1)) +
   geom_bar(width = 1, stat = "identity") +
@@ -124,12 +136,16 @@ chart(data = biometry, masse_corr ~ age_schedule %fill=% genre) +
   geom_violin()+
   labs(x = "Échelle d'âge", y = "Masse [kg]")
 ```
- 
+
+> GE: il manque une information dans votre texte relatif aux classes que vous avez employé.
+
   Nous avons regroupé les individus par tranches d'âge allant de 15 à 74 ans. Nous observons que les hommes ont tendance de manière générale à avoir une masse plus élevée que celle des femmes. Nous remarquons pour les femmes que la masse s'accroît avec l'âge pour la majorité, ceci est observable par le fait qu'à partir de 60ans la masse est strictement supérieure à 57kg ce qui n'est pas le cas pour les autres tranches d'âge. Chez les hommes, il en est de même lorsque l'on se concentre sur la majorité des individus même si des valeurs extrêmes ont été enregistrées à l'âge adulte avec des masses pouvant aller jusque 177kg.
   L'âge peut donc influencer la masse des individus.
  
  
 ###Distribution de la masse des individus des différentes tranches d'âges sur base du nombre de fastfood par semaine. 
+
+> GE: le titre de la section correspond plus à un titre de graphique qu'à un titre de section
 
 ```{r}
 chart(data = biometry, masse_corr ~ fastfood | age_schedule) +
@@ -137,16 +153,22 @@ chart(data = biometry, masse_corr ~ fastfood | age_schedule) +
   labs(x = "Nombre de fastfood/semaine", y = "Masse [kg]")
 ```
  
-  Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Nous pouvons déjà remarquer dans un premier temps que la fréquentation des fastfood est un phénomène lié à l'âge, en effet une fois la soixantaine passée, le taux de fréquentation des fastfood n'excède pas 1 fois par semaine et ce chiffre n'est que pour une minorité, la majorité des individus n'y vont pas du tout. On remarque que chez les adolescents et jeunes adultes le nombre de fastfood par semaine n'influence pas beaucoup le poids. Chez les adolescents, entre 40 et 80kg la fréquentation des fatsfoods va de 0 à 3 fois par semaine sans différence marquante dans leur poids sauf une ou 2 exeptions. Chez les jeunes adultes, le taux de fréquentation augmente mais des personnes ayant un poids plus élevé sont enregistrées pour une fréquentation des fastfoods s'élevant à seulement 1 fois par semaine, la majorité des individus allant 2 fois par semaine ayant tendance à présenter un poids moins élevé que ces derniers. Chez les adultes (40 à 60ans) même conclusion on ne voit pas une différence de poids significative entre les personnes allant 1 fois, 2 fois ou encore 3 fois par semaine dans un fasfood. 
+  Ce graphique nous permet de voir l'influence des fatsfood sur le poids. Nous pouvons déjà remarquer dans un premier temps que la fréquentation des fastfood est un phénomène lié à l'âge, en effet une fois la soixantaine passée, le taux de fréquentation des fastfood n'excède pas 1 fois par semaine et ce chiffre n'est que pour une minorité, la majorité des individus n'y vont pas du tout. On remarque que chez les adolescents et jeunes adultes le nombre de fastfood par semaine n'influence pas beaucoup le poids.
+  
+> GE: On remarque que chez les adolescents et jeunes adultes le nombre de fastfood par semaine n'influence pas beaucoup le poids. que signifie cette phrase ? sur une observation graphique vous pouvez en tirer cette affirmation ? 
+
+Chez les adolescents, entre 40 et 80kg la fréquentation des fatsfoods va de 0 à 3 fois par semaine sans différence marquante dans leur poids sauf une ou 2 exeptions. Chez les jeunes adultes, le taux de fréquentation augmente mais des personnes ayant un poids plus élevé sont enregistrées pour une fréquentation des fastfoods s'élevant à seulement 1 fois par semaine, la majorité des individus allant 2 fois par semaine ayant tendance à présenter un poids moins élevé que ces derniers. Chez les adultes (40 à 60ans) même conclusion on ne voit pas une différence de poids significative entre les personnes allant 1 fois, 2 fois ou encore 3 fois par semaine dans un fasfood. 
   Les personnes ayant un poids plus élevé ne mange donc pas spécialement plus de fastfood et les personnes plus mince n'en mange pas spécialement moins. 
   La différence de poids entre les jeunes et les personnes plus âgées constatée par ce graphique précédent n'est donc pas liée au taux de fréquentation des fastfoods. 
 
-####IMC 
+#### IMC 
+
 ```{r}
 biometry <- mutate(biometry, imc= masse_corr / taille^2)
 biometry
 ```
 
+> GE: ne pas afficher le tableau de données après une simple modification 
 
 ```{r}
 biometry <- mutate(biometry,
@@ -160,6 +182,8 @@ biometry <- mutate(biometry,
 biometry
 ```
 
+> GE: ne pas afficher le tableau de données après une simple modification 
+
 ```{r}
 biometry$imc_schedule <- as.factor(biometry$imc_schedule)
 ```
@@ -169,7 +193,7 @@ filter(biometry,imc_schedule != "NA") -> biometry
 ```
 
 
-###Répartition des individus suivant leur position sur l'échelle d'IMC
+### Répartition des individus suivant leur position sur l'échelle d'IMC
 
 ```{r}
 biometry%>.%
@@ -189,6 +213,8 @@ b <- ggpubr::ggtexttable(head(imc_schedule_count))
 
 combine_charts(list(a, b))
 ```
+
+> GE: il est dommage de ne pas avoir ordonnée les niveaux de poids pour obtenir l'ordre logique sous_poids, normal, surpoids, obésité. le tableau et le graphique sont intéressant mais il montre la même information 
 
  Un tableau recensant précisément le nombre d'individus pour chacun des paliers sur l'échelle d'IMC a été réalisé en parallèle du graphique. Nous pouvons remarquer que sur 212 individus plus de la moitié (118) possèdent un poids pouvant être qualifié de normal selon l'échelle d'IMC (soit imc >= 18.5 & imc < 25). Néanmoins environ 35% des individus de cet échantillon sont également caractérisés par un imc supérieur à la moyenne avec 47 individus en surpoids et 33 qui souffrent d'obésité. La tendance pour un poids inférieur à la moyenne étant moindre avec 14 individus soit environ 7%. Nous pouvons donc retenir que même si plus de la moitié des personnes de cet échantillon ont un poids considéré comme "normal", une autre partie non négligeable possède un poids pouvant être qualifié de nocif pour un état de santé favorable. Mais l'IMC bien qu'étant très populaire est à prendre avec des pincettes, vu que dans sa formule il ne prend ne compte que le poids et la taille, il ne faut pas oublié que les muscles sont plus lourds que la graisse une personne peut donc etre musclée par exemple et etre plus lourde que la moyenne sans pour autant etre en obésité. 
  
@@ -227,8 +253,11 @@ combine_charts(list(a, b))
 
   Ce graphique permet une vue d'ensemble des données. On constate que la majorité des personnes interrogées sont sédentaires. Cette sédentarité n'est pas un facteur déterminant de surpoids ou d'obésité étant donné qu'il y a quasi autant de personnes sédentaires chez les personnes en sous-poids que chez les personnes dites obèses. 
   On remarque que l'activité professionelle n'influence pas beaucoup l'IMC ce qui est étonnnant.
+  
+> GE: Vous devez faire attention de bien décrire votre graphique , sans la lecture du code, il n'est pas possible de connaitre la signification de A, B, C et D.
 
-###Distribution de l'activité physique au sein des différents paliers de l'échelle d'IMC
+### Distribution de l'activité physique au sein des différents paliers de l'échelle d'IMC
+
 ```{r}
 l <- chart(data = biometry, acti_physique ~ imc_schedule %col=% imc_schedule) +
   geom_violin()+
@@ -244,6 +273,9 @@ m <- chart(data = biometry, ~ acti_physique %fill=% genre) +
 
  combine_charts(list(l, m), common.legend = TRUE)
 ```
+
+
+> dans votre manuscrit vous obtenez, une longue description de ScaleDiscrete car vous avez oublié un + dans votre graphique m`
 
   On peut observer sur ce graphique que la grande majorité des personnes victimes de surpoids ou d'obésité ont tendance à ne pas effectuer d'activité physique, ceci pourrait donc être considéré comme un facteur d'obésité. De plus, les personnes ayant un poids normal et en sous-poids effectuent une activité physique dite plus régulière avec pour certains plus de 5 heures de sport par semaine. Un histogramme a été réalisé en parallèle afin de déterminer si il existait une différence entre le nombre d'heures de sport effectuées par les femmes et par les hommes. Visiblement ce n'est pas le cas, hommes et femmes effectuent un nombre d'heures de sport similaire (entre 0 et 10h), et pour chaque genre il existe des excpetions allant jusqu'à plus de 30h de sport par semaine, certaines personnes étant tout simplement plus sportives que d'autres.
 
@@ -306,15 +338,17 @@ chart(data = biometry, ~ alcool %fill=% acti_profession | acti_profession) +
 
   Nous constatons qu'il n'y a pas une différence drastique dans la consommation d'alcool des personnes actives, intermédiaires et sédentaires. Sur base de ce graphique nous pouvons uniquement remarquer que les personnes actives et sédentaires ont tendance à consommer davantage d'alcool que les personnes intermédiaires. Cependant, les personnes sédentaires une tendance à la consommation d'alcool un peu plus élevées avec des consommations pour une petite minorité pouvant aller jusqu'à 42 verres par semaine.
 
-##Test
+## Test
 
-###Test de Student
+### Test de Student
+
+> GE: pourquoi employer la fonction skim ? à nouveau vous visualisez les données 
 
 ```{r Test de Student}
 skim(biometry_2018)
 ```
 
-####Distribution du poids par genre pour la biométrie humaine
+#### Distribution du poids par genre pour la biométrie humaine
 
 ```{r graphique masse et genre}
 chart(biometry_2018, masse_corr ~ genre %fill=% genre) + geom_boxplot(na.rm = TRUE)+
@@ -395,6 +429,7 @@ anova(anova. <- lm(data = biometry_women, masse_corr ~ group))
 ```
 Nous rejettons H0 car p-value > que 0.05. Nous pouvons donc dire que les femmes sédentaires ont un poids plus élevé que celles actives et intermédiaires. Ce n'est pas du au hasard de l'échantilonnage.
 
+> GE: vous avez une p value suppérieur au seuil alpha il n'y a donc pas de différence significative 
 
 ```{r}
 filter(biometry ,genre != "f") -> biometry_man
@@ -476,6 +511,9 @@ Il y a une différence significative entre les hommes actifs - intermédiaire ca
 
 
 #Discussion
+
+> GE: La phrase ci-dessous n'est pas correcte , les différence ne sont pas du au hasard ? que voulez vous dire ?
+
 Les différents test sont effectués pour montrer que les resultats obtenus sont (ou pas) dû au hasard, la conclusion de ces différents test se trouve sous c'est dernier. Les différents graphiques sont utilisés de facon à faire ressortir des données qui auraient un lien entre elles et qui pourrait s'influencer l'une l'autre ainsi que le poids qui est notre question principale. Durant le rapport la variable "IMC" à été intégrée. Cette variable permet uen meilleure vison des resultats car elle determine si il y a obésité ou non et jusqu'a quel point. De plus, l'IMC ne prend en compte que le poids et la taille si on fait le test à la maison on peut voir parfois que l'IMC peut afficher "surpoids" alors que la personne est juste plus musclée ou à juste un petit ventre ou tout au contraire une personne affichée "sous poids" alors qu'elle est juste plus grande et mince ou qui est juste à la limite du "poids normal" et du "sous poids". L'IMC est donc un bon indicateur mais n'est pas à faire confiance à 100%. 
 Grace aux différent graphique on remarque que l'age influence le poids ce qui est assez logique car un jeune est en croissance, bouge plus (sauf exeption) et a un metabolisme plus rapide qu'une personne plus agée ce qui explique que les jeunes peuvent aller plus au fastfood sans frocément voir leurs poids changer. En effet on a observer une tendance marquée pour les jeunes d'aller au fastfood ce qui est facilement explicable aussi car à cause des cours c'est plus simple d'aller au fastfood entre amis que de se faire à manger. Au niveau de l'activité professionelle on voit que la plupart de l'echantillon est sédentaire mais qu'il n'y a pas d'influence sur le poids, ceci peut s'expliquer si une partie non négligeable de l'echantillon est adolescent ou jeune adulte car etre étudiant est considéré comme etre sédentaire or comme expliqué précédement un jeune de prend pas beaucoup de poids, de plus on peut avoir un métier sédentaire et faire beaucoup d'activité physique. En restant dans l'activité physique, elle influence beaucoup car selon les résultats, les personnes ne faisant pas d'activité physique ont plus tendance à etre en obésité tandis que ceux qui pratique du sport régulièrement ont un poids normal voir un sous poids. Si les fastfood n'ont pas d'influence on peut penser que les grignotages ou la consomation d'alcool en auront mais non, pour le grignotage c'est les gens en sous poids qui en font le plus mais on peut penser que si il y a beaucoup de grignotages il y a peu voir pas de repas. Mais lorsqu'on étudie le nombre de repas par jour on voit qu'il n'influence pas non plus mais on ne connait ni la quantité ni la qualité des repas, c'est ce qui pourrait influencer le plus. L'alcool n'influence pas non plus mais on remarque quand meme une majorité de personne qui boivent de l'alcool chez les sédentaires. Les tour de hanche et de taille ont été mesuré et permettent de voir si l'IMC correspond à ces mesures vu que c'est proportionnel au poids, le tour du poignet lui n'est pas du tout fiable.
 

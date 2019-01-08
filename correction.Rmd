@@ -1,0 +1,31 @@
+---
+title: "Correction globale"
+author: "Engels Guyliann"
+output: html_notebook
+---
+
+## Note
+
+La correction est en deux phases : 
+
+- correction globale qui est présentée dans ce fichier
+- correction fine du rapport dans le rapport directement à l'aide de `block quotes` > GE: que vous pouvez facilement rechercher.
+
+## Auteurs du travail 
+
+- Laura Braeckvelt
+- Laura Toubeau
+- Lisa musoi
+- Margaux Renier
+
+## Remarques générales
+
+- Tous les étudiants ont participé à ce travail (contributors sur Github)
+
+- Ce travail est mal organisé  avec un grand nombre de doublons du fichier biometry_2018.rds. Des fichiers R se trouvent caché dans les dossier analysis et data. 
+
+- Vous n'utilisez pas de script R pour importer nettoyer et sauvegarder vos données en local dans votre projet.
+
+- La comparaison des workflows a correctement été effectuée
+
+
